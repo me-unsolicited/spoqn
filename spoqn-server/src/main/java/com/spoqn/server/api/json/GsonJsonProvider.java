@@ -9,7 +9,9 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -19,6 +21,8 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 @Provider
 @Consumes({ MediaType.APPLICATION_JSON, "text/json" })
@@ -42,6 +46,8 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
         try (Writer writer = new OutputStreamWriter(entityStream)) {
             new Gson().toJson(t, genericType, writer);
+        } catch (JsonIOException e) {
+            throw new InternalServerErrorException(e);
         }
     }
 
@@ -57,6 +63,10 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
         try (InputStreamReader reader = new InputStreamReader(entityStream)) {
             return new Gson().fromJson(reader, genericType);
+        } catch (JsonIOException e) {
+            throw new InternalServerErrorException(e);
+        } catch (JsonSyntaxException e) {
+            throw new BadRequestException(e);
         }
     }
 
