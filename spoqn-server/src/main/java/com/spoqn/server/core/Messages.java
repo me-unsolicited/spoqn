@@ -16,13 +16,13 @@ public class Messages {
     private List<Message> messages = new ArrayList<>();
     {
         // temporary until UI controlled
-        messages.add(message(UUID.randomUUID(), "frodo", "Hello, World!"));
-        messages.add(message(UUID.randomUUID(), "bilbo", "new phone who dis"));
+        messages.add(message("frodo", "Hello, World!"));
+        messages.add(message("bilbo", "new phone who dis"));
     }
 
-    private Message message(UUID id, String user, String text) {
+    private Message message(String user, String text) {
         Message message = new Message();
-        message.setId(id);
+        message.setId(UUID.randomUUID());
         message.setUser(user);
         message.setText(text);
         message.setTimestamp(Instant.now());
