@@ -1,10 +1,11 @@
 # spoqn
 
-
 # spoqn-ui
 Install latest stable NodeJS
 
 From CMD line in 'spoqn-ui' directory
+
+Run npm install webpack -g
 
 Run npm install
 
