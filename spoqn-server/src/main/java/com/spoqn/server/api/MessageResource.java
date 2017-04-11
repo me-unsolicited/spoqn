@@ -14,7 +14,7 @@ public class MessageResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Message getMessages() {
         Message msg = new Message();
-        msg.text = "Hello, World!";
+        msg.setText("Hello, World!");
         return msg;
     }
 }
