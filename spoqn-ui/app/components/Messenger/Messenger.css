@@ -1,0 +1,55 @@
+.messenger-view {
+    min-height: 300px;
+    width: 500px
+}
+
+ul.chat {
+    list-style-type: none;
+}
+
+.chat-head {
+    vertical-align: top;
+    margin-right: 10px;
+}
+
+.chat-content {
+    padding: 10px;
+}
+
+.chat-body {
+    width: 400px;
+}
+
+.chat-body .message-content {
+    border: #cccccc 1px solid;
+    padding: 5px;
+    border-radius: 10px;
+    box-shadow: #CCC 1px 1px 1px 1px;
+}
+
+.chat-body .header {
+    margin-left: 5px;
+}
+
+.messenger-author .user-input.form-control {
+    width: 400px;
+}
+
+.messenger-author .send-button {
+    margin-left: 10px;
+}
+
+.messenger-author {
+    padding: 10px;
+}
+
+.chat-img {
+    height: 50px;
+    width: 50px;
+}
+
+.chat-img .user-avatar {
+    width: inherit;
+    height: inherit;
+    object-fit: cover;
+}

@@ -9,7 +9,10 @@ module.exports = {
     },
     resolve: {
         alias: {
-            Components: path.resolve(__dirname, './app/components')
+            Components: path.resolve(__dirname, './app/components'),
+            VendorJS: path.resolve(__dirname, './app/vendor/js'),
+            VendorCSS: path.resolve(__dirname, './app/vendor/css'),
+            Styles: path.resolve(__dirname, './app/styles')
         },
         extensions: ['.js', '.jsx']
     },
@@ -22,13 +25,17 @@ module.exports = {
                 },
                 test: /\.jsx?$/,
                 exclude: /(node_modules|bower_components)/
+            },
+            {
+                test: /\.css$/,
+                loader: "style-loader!css-loader"
             }
         ]
     },
     plugins: [
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, './app/index.hbs'),
-            filename:  path.resolve(__dirname, './dist/index.html'),
+            filename: path.resolve(__dirname, './dist/index.html'),
             inject: false
         })
     ]
