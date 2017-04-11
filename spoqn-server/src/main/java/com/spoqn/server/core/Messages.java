@@ -24,7 +24,7 @@ public class Messages {
         return message;
     }
 
-    public List<Message> getAll() {
+    public List<Message> read() {
         return Collections.unmodifiableList(messages);
     }
 

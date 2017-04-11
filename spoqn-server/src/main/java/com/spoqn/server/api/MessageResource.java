@@ -25,7 +25,7 @@ public class MessageResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Message> get() {
-        return messages.getAll();
+        return messages.read();
     }
 
     @POST
