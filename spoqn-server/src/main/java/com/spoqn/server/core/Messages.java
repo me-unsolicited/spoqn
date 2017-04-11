@@ -24,12 +24,12 @@ public class Messages {
         return message;
     }
 
-    public List<Message> read() {
-        return Collections.unmodifiableList(messages);
-    }
-
     public Message create(Message message) {
         messages.add(message);
         return message;
+    }
+
+    public List<Message> read() {
+        return Collections.unmodifiableList(messages);
     }
 }
