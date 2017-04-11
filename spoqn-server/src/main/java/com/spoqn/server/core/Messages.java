@@ -3,8 +3,11 @@ package com.spoqn.server.core;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.spoqn.server.data.entities.Message;
 
+@Component
 public class Messages {
 
     public List<Message> getAll() {
