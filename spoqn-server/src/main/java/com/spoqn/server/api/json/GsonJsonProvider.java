@@ -9,6 +9,7 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.InternalServerErrorException;
@@ -29,6 +30,13 @@ import com.google.gson.JsonSyntaxException;
 @Produces({ MediaType.APPLICATION_JSON, "text/json" })
 public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
 
+    private Gson gson;
+
+    @PostConstruct
+    public void init() {
+        gson = new Gson();
+    }
+
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return true;
@@ -45,7 +53,7 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             throws IOException, WebApplicationException {
 
         try (Writer writer = new OutputStreamWriter(entityStream)) {
-            new Gson().toJson(t, genericType, writer);
+            gson.toJson(t, genericType, writer);
         } catch (JsonIOException e) {
             throw new InternalServerErrorException(e);
         }
@@ -62,7 +70,7 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             throws IOException, WebApplicationException {
 
         try (InputStreamReader reader = new InputStreamReader(entityStream)) {
-            return new Gson().fromJson(reader, genericType);
+            return gson.fromJson(reader, genericType);
         } catch (JsonIOException e) {
             throw new InternalServerErrorException(e);
         } catch (JsonSyntaxException e) {
