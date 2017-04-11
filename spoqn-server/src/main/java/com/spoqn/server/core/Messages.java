@@ -1,6 +1,7 @@
 package com.spoqn.server.core;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -10,11 +11,20 @@ import com.spoqn.server.data.entities.Message;
 @Component
 public class Messages {
 
+    private List<Message> messages = new ArrayList<>();
+    {
+        // temporary until UI controlled
+        messages.add(message("Hello, World!"));
+        messages.add(message("new phone who dis"));
+    }
+
+    private Message message(String text) {
+        Message message = new Message();
+        message.setText(text);
+        return message;
+    }
+
     public List<Message> getAll() {
-        Message message0 = new Message();
-        message0.setText("Hello, World!");
-        Message message1 = new Message();
-        message1.setText("new phone who dis");
-        return Arrays.asList(message0, message1);
+        return Collections.unmodifiableList(messages);
     }
 }
