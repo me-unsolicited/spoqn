@@ -27,4 +27,9 @@ public class Messages {
     public List<Message> getAll() {
         return Collections.unmodifiableList(messages);
     }
+
+    public Message create(Message message) {
+        messages.add(message);
+        return message;
+    }
 }
