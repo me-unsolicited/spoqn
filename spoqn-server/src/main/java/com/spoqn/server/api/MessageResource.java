@@ -9,8 +9,14 @@ import javax.ws.rs.core.MediaType;
 public class MessageResource {
 
 	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getMessages() {
-		return "Hello, World!";
+	@Produces(MediaType.APPLICATION_JSON)
+	public Message getMessages() {
+		Message msg = new Message();
+		msg.text = "Hello, World!";
+		return msg;
+	}
+
+	public class Message {
+		public String text;
 	}
 }
