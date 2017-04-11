@@ -5,6 +5,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.spoqn.server.data.entities.Message;
+
 @Path("/messages")
 public class MessageResource {
 
@@ -14,9 +16,5 @@ public class MessageResource {
         Message msg = new Message();
         msg.text = "Hello, World!";
         return msg;
-    }
-
-    public class Message {
-        public String text;
     }
 }
