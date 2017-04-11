@@ -1,5 +1,6 @@
 package com.spoqn.server.core;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,11 +25,13 @@ public class Messages {
         message.setId(id);
         message.setUser(user);
         message.setText(text);
+        message.setTimestamp(Instant.now());
         return message;
     }
 
     public Message create(Message message) {
         message.setId(UUID.randomUUID());
+        message.setTimestamp(Instant.now());
         messages.add(message);
         return message;
     }
