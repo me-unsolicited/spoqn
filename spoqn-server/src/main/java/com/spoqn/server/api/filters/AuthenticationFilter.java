@@ -1,6 +1,7 @@
 package com.spoqn.server.api.filters;
 
 import java.io.IOException;
+import java.security.Principal;
 
 import javax.annotation.Priority;
 import javax.annotation.Resource;
@@ -11,6 +12,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 import org.springframework.stereotype.Component;
@@ -23,6 +25,7 @@ import com.spoqn.server.core.exceptions.AuthenticationException;
 @Component
 public class AuthenticationFilter implements ContainerRequestFilter {
 
+    private static final String AUTH_SCHEME = "Bearer";
     private static final String AUTH_PREFIX = "Bearer ";
     private static final String LOGIN_PATH_EXCLUSION = "login";
 
@@ -45,9 +48,48 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
         String token = auth.substring(AUTH_PREFIX.length());
         try {
-            logins.resolveUsername(token);
+            String username = logins.resolveUsername(token);
+            SecurityContext baseSc = requestContext.getSecurityContext();
+            SecurityContext sc = new UserSecurityContext(baseSc, username);
+            requestContext.setSecurityContext(sc);
         } catch (AuthenticationException e) {
             throw new NotAuthorizedException("BAD_TOKEN");
+        }
+    }
+
+    private class UserSecurityContext implements SecurityContext {
+
+        private final SecurityContext base;
+        private final Principal principal;
+
+        public UserSecurityContext(SecurityContext base, String user) {
+            this.base = base;
+            this.principal = new Principal() {
+                @Override
+                public String getName() {
+                    return user;
+                }
+            };
+        }
+
+        @Override
+        public Principal getUserPrincipal() {
+            return principal;
+        }
+
+        @Override
+        public boolean isUserInRole(String role) {
+            return false;
+        }
+
+        @Override
+        public boolean isSecure() {
+            return base.isSecure();
+        }
+
+        @Override
+        public String getAuthenticationScheme() {
+            return AUTH_SCHEME;
         }
     }
 }

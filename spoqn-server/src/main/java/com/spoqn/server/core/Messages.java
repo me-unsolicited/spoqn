@@ -1,5 +1,6 @@
 package com.spoqn.server.core;
 
+import java.security.Principal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,8 +30,9 @@ public class Messages {
         return message;
     }
 
-    public Message create(Message message) {
+    public Message create(Principal principal, Message message) {
         message.setId(UUID.randomUUID());
+        message.setUser(principal.getName());
         message.setTimestamp(Instant.now());
         messages.add(message);
         return message;

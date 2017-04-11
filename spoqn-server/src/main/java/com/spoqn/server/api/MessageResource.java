@@ -8,7 +8,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,9 @@ public class MessageResource {
     @Resource
     private Messages messages;
 
+    @Context
+    private SecurityContext sc;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Message> get() {
@@ -32,6 +37,6 @@ public class MessageResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Message post(Message message) {
-        return messages.create(message);
+        return messages.create(sc.getUserPrincipal(), message);
     }
 }
