@@ -55,7 +55,7 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         try (Writer writer = new OutputStreamWriter(entityStream)) {
             gson.toJson(t, genericType, writer);
         } catch (JsonIOException e) {
-            throw new InternalServerErrorException(e);
+            throw new InternalServerErrorException("JSON_WRITE", e);
         }
     }
 
@@ -72,9 +72,9 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         try (InputStreamReader reader = new InputStreamReader(entityStream)) {
             return gson.fromJson(reader, genericType);
         } catch (JsonIOException e) {
-            throw new InternalServerErrorException(e);
+            throw new InternalServerErrorException("JSON_READ", e);
         } catch (JsonSyntaxException e) {
-            throw new BadRequestException(e);
+            throw new BadRequestException("JSON_PARSE", e);
         }
     }
 
