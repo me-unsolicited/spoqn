@@ -8,15 +8,15 @@ import javax.ws.rs.core.MediaType;
 @Path("/messages")
 public class MessageResource {
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Message getMessages() {
-		Message msg = new Message();
-		msg.text = "Hello, World!";
-		return msg;
-	}
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Message getMessages() {
+        Message msg = new Message();
+        msg.text = "Hello, World!";
+        return msg;
+    }
 
-	public class Message {
-		public String text;
-	}
+    public class Message {
+        public String text;
+    }
 }
