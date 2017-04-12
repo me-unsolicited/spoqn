@@ -1,6 +1,10 @@
 package com.spoqn.server.core;
 
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.TemporalAmount;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -17,6 +21,8 @@ import com.spoqn.server.data.entities.Login;
 
 @Component
 public class Logins {
+
+    private static final TemporalAmount TOKEN_LIFETIME = Duration.ofMinutes(15L);
 
     // don't look at this
     private Map<String, String> logins = new HashMap<>();
@@ -53,7 +59,13 @@ public class Logins {
 
     private String issueToken(String username) {
 
-        return JWT.create().withIssuer(issuer()).withSubject(username).sign(alg());
+        Date expiration = Date.from(Instant.now().plus(TOKEN_LIFETIME));
+
+        return JWT.create()
+                .withIssuer(issuer())
+                .withSubject(username)
+                .withExpiresAt(expiration)
+                .sign(alg());
     }
 
     /**
@@ -64,7 +76,7 @@ public class Logins {
      *             If the token is invalid or expired
      */
     public String resolveUsername(String token) {
-        
+
         try {
             return JWT.require(alg()).withIssuer(issuer()).build().verify(token).getSubject();
         } catch (JWTVerificationException e) {
