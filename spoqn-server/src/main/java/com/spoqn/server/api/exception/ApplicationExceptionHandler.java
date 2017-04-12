@@ -5,14 +5,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import com.spoqn.server.data.entities.ErrorEntity;
+import com.spoqn.server.data.entities.CodedError;
 
 @Provider
 public class ApplicationExceptionHandler implements ExceptionMapper<WebApplicationException> {
 
     @Override
     public Response toResponse(WebApplicationException exception) {
-        ErrorEntity error = new ErrorEntity(exception.getMessage());
+        CodedError error = new CodedError(exception.getMessage());
         return Response.fromResponse(exception.getResponse()).entity(error).build();
     }
 }

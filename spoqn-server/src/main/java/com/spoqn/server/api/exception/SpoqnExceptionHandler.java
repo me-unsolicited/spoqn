@@ -5,7 +5,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import com.spoqn.server.core.exceptions.SpoqnException;
-import com.spoqn.server.data.entities.ErrorEntity;
+import com.spoqn.server.data.entities.CodedError;
 
 @Provider
 public class SpoqnExceptionHandler implements ExceptionMapper<SpoqnException> {
@@ -14,7 +14,7 @@ public class SpoqnExceptionHandler implements ExceptionMapper<SpoqnException> {
 
     @Override
     public Response toResponse(SpoqnException exception) {
-        ErrorEntity error = new ErrorEntity(ERROR_CODE);
+        CodedError error = new CodedError(ERROR_CODE);
         return Response.serverError().entity(error).build();
     }
 }
