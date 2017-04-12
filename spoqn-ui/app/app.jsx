@@ -4,5 +4,9 @@ import {Messenger} from 'Components/Messenger/Messenger';
 import bootstrap from 'VendorCSS/bootstrap.min.css';
 import styles from 'Styles/styles.css';
 
-const message = 'Welcome to spoqn!';
-ReactDOM.render(<Messenger message={message}/>, document.getElementById('app'));
+const user = {
+    loginId: 'test-user-1',
+    username: 'Logged In Doe'
+};
+
+ReactDOM.render(<Messenger user={user}/>, document.getElementById('app'));

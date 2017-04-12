@@ -1,6 +1,8 @@
 .messenger-view {
     min-height: 300px;
-    width: 500px
+    width: 500px;
+    max-height: 500px;
+    overflow: auto;
 }
 
 ul.chat {
@@ -10,6 +12,11 @@ ul.chat {
 .chat-head {
     vertical-align: top;
     margin-right: 10px;
+}
+
+.chat-head.is-even {
+    vertical-align: top;
+    margin-left: 10px;
 }
 
 .chat-content {
@@ -52,4 +59,20 @@ ul.chat {
     width: inherit;
     height: inherit;
     object-fit: cover;
+}
+
+.messenger-view::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #F5F5F5;
+    border-radius: 10px;
+}
+
+.messenger-view::-webkit-scrollbar {
+    width: 5px;
+    background-color: #F5F5F5;
+}
+
+.messenger-view::-webkit-scrollbar-thumb {
+    background-color: #AAA;
+    border-radius: 10px;
 }
