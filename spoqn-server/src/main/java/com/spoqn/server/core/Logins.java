@@ -61,12 +61,17 @@ public class Logins {
     private String issueToken(String username) {
 
         Map<String, Object> header = Collections.singletonMap("typ", "JWT");
-        Date expiration = Date.from(Instant.now().plus(TOKEN_LIFETIME));
+        
+        Instant now = Instant.now();
+        Date issued = Date.from(now);
+        Date expiration = Date.from(now.plus(TOKEN_LIFETIME));
 
         return JWT.create()
                 .withHeader(header)
                 .withIssuer(issuer())
                 .withSubject(username)
+                .withIssuedAt(issued)
+                .withNotBefore(issued)
                 .withExpiresAt(expiration)
                 .sign(alg());
     }
