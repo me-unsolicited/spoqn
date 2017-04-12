@@ -29,6 +29,9 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     private static final String AUTH_PREFIX = "Bearer ";
     private static final String LOGIN_PATH_EXCLUSION = "login";
 
+    private static final String CHALLENGE_NO_AUTH = "Bearer";
+    private static final String CHALLENGE_BAD_AUTH = "Bearer error=\"invalid_token\"";
+
     @Resource
     private Logins logins;
 
@@ -44,7 +47,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
         String auth = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
         if (auth == null || !auth.startsWith(AUTH_PREFIX))
-            throw new NotAuthorizedException("NO_AUTH_HEADER");
+            throw new NotAuthorizedException("NO_AUTH_HEADER", CHALLENGE_NO_AUTH);
 
         String token = auth.substring(AUTH_PREFIX.length());
         try {
@@ -53,7 +56,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             SecurityContext sc = new UserSecurityContext(baseSc, username);
             requestContext.setSecurityContext(sc);
         } catch (AuthenticationException e) {
-            throw new NotAuthorizedException("BAD_TOKEN");
+            throw new NotAuthorizedException("BAD_TOKEN", CHALLENGE_BAD_AUTH);
         }
     }
 
