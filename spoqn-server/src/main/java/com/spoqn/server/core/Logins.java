@@ -12,6 +12,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
+import com.spoqn.server.core.exceptions.SpoqnException;
 import com.spoqn.server.data.entities.Login;
 
 @Component
@@ -56,8 +57,7 @@ public class Logins {
             Algorithm alg = Algorithm.HMAC256(key());
             return JWT.create().withIssuer(issuer()).withSubject(username).sign(alg);
         } catch (IllegalArgumentException | UnsupportedEncodingException e) {
-            // TODO throw a spoqn-exception
-            throw new RuntimeException(e);
+            throw new SpoqnException(e);
         }
     }
 
@@ -74,8 +74,7 @@ public class Logins {
         try {
             alg = Algorithm.HMAC256(key());
         } catch (IllegalArgumentException | UnsupportedEncodingException e) {
-            // TODO throw a spoqn-exception
-            throw new RuntimeException(e);
+            throw new SpoqnException(e);
         }
         
         try {

@@ -1,6 +1,6 @@
 package com.spoqn.server.core.exceptions;
 
-public class AuthenticationException extends RuntimeException {
+public class AuthenticationException extends SpoqnException {
     private static final long serialVersionUID = 5365837251068238632L;
 
     public AuthenticationException() {
