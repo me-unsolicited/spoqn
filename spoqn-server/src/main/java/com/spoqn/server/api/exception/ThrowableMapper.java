@@ -7,7 +7,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import com.spoqn.server.core.exceptions.SpoqnException;
 import com.spoqn.server.data.entities.CodedError;
 import com.spoqn.server.data.entities.UnknownCodedError;
 
@@ -15,12 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Provider
 @Slf4j
-public class SpoqnExceptionMapper implements ExceptionMapper<SpoqnException> {
+public class ThrowableMapper implements ExceptionMapper<Throwable> {
 
     private static final String MSG_PATTERN = "Incident ID [{0}]";
 
     @Override
-    public Response toResponse(SpoqnException exception) {
+    public Response toResponse(Throwable exception) {
 
         // log an incident ID with a stack trace
         UUID incident = UUID.randomUUID();
