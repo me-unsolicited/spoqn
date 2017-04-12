@@ -86,7 +86,12 @@ public class Logins {
     public String resolveUsername(String token) {
 
         try {
-            return JWT.require(alg()).withIssuer(issuer()).build().verify(token).getSubject();
+            return JWT.require(alg())
+                    .withIssuer(issuer())
+                    .build()
+                    .verify(token)
+                    .getSubject();
+
         } catch (JWTVerificationException e) {
             throw new AuthenticationException(e);
         }
