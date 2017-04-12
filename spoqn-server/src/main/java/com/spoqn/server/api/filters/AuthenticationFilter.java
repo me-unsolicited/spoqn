@@ -50,14 +50,16 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             throw new NotAuthorizedException("NO_AUTH_HEADER", CHALLENGE_NO_AUTH);
 
         String token = auth.substring(AUTH_PREFIX.length());
+        String username;
         try {
-            String username = logins.resolveUsername(token);
-            SecurityContext baseSc = requestContext.getSecurityContext();
-            SecurityContext sc = new UserSecurityContext(baseSc, username);
-            requestContext.setSecurityContext(sc);
+            username = logins.resolveUsername(token);
         } catch (AuthenticationException e) {
             throw new NotAuthorizedException("BAD_TOKEN", CHALLENGE_BAD_AUTH);
         }
+
+        SecurityContext baseSc = requestContext.getSecurityContext();
+        SecurityContext sc = new UserSecurityContext(baseSc, username);
+        requestContext.setSecurityContext(sc);
     }
 
     private class UserSecurityContext implements SecurityContext {
