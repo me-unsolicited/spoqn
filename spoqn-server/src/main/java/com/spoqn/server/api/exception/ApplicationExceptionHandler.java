@@ -5,7 +5,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import lombok.Data;
+import com.spoqn.server.data.entities.ErrorEntity;
 
 @Provider
 public class ApplicationExceptionHandler implements ExceptionMapper<WebApplicationException> {
@@ -14,10 +14,5 @@ public class ApplicationExceptionHandler implements ExceptionMapper<WebApplicati
     public Response toResponse(WebApplicationException exception) {
         ErrorEntity error = new ErrorEntity(exception.getMessage());
         return Response.fromResponse(exception.getResponse()).entity(error).build();
-    }
-
-    @Data
-    private static class ErrorEntity {
-        private final String code;
     }
 }
