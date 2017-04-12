@@ -81,7 +81,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         private final String path;
     }
 
-    private class UserSecurityContext implements SecurityContext {
+    private static class UserSecurityContext implements SecurityContext {
 
         private final SecurityContext base;
         private final Principal principal;
