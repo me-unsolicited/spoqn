@@ -4,12 +4,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
 import com.spoqn.server.data.entities.Login;
@@ -17,9 +17,10 @@ import com.spoqn.server.data.entities.Login;
 @Component
 public class Logins {
 
+    private static final String TODO_SECRET = "TODO: secret";
+
     // don't look at this
     private Map<String, String> logins = new HashMap<>();
-    private Map<String, String> tokens = new HashMap<>();
 
     /**
      * @throws ExistingLoginException
@@ -52,15 +53,9 @@ public class Logins {
     }
 
     private String issueToken(String username) {
-        String token = generateToken(username);
-        tokens.put(token, username);
-        return token;
-    }
-
-    private String generateToken(String username) {
 
         try {
-            Algorithm alg = Algorithm.HMAC256("TODO: secret");
+            Algorithm alg = Algorithm.HMAC256(TODO_SECRET);
             return JWT.create().withIssuer("spoqn.com").withSubject(username).sign(alg);
         } catch (IllegalArgumentException | UnsupportedEncodingException e) {
             // TODO throw a spoqn-exception
@@ -77,10 +72,18 @@ public class Logins {
      */
     public String resolveUsername(String token) {
 
-        String username = tokens.get(token);
-        if (username == null)
-            throw new AuthenticationException();
-
-        return username;
+        Algorithm alg;
+        try {
+            alg = Algorithm.HMAC256(TODO_SECRET);
+        } catch (IllegalArgumentException | UnsupportedEncodingException e) {
+            // TODO throw a spoqn-exception
+            throw new RuntimeException(e);
+        }
+        
+        try {
+            return JWT.require(alg).withIssuer("spoqn.com").build().verify(token).getSubject();
+        } catch (JWTVerificationException e) {
+            throw new AuthenticationException(e);
+        }
     }
 }
