@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.TemporalAmount;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,9 +60,11 @@ public class Logins {
 
     private String issueToken(String username) {
 
+        Map<String, Object> header = Collections.singletonMap("typ", "JWT");
         Date expiration = Date.from(Instant.now().plus(TOKEN_LIFETIME));
 
         return JWT.create()
+                .withHeader(header)
                 .withIssuer(issuer())
                 .withSubject(username)
                 .withExpiresAt(expiration)
