@@ -53,12 +53,7 @@ public class Logins {
 
     private String issueToken(String username) {
 
-        try {
-            Algorithm alg = Algorithm.HMAC256(key());
-            return JWT.create().withIssuer(issuer()).withSubject(username).sign(alg);
-        } catch (IllegalArgumentException | UnsupportedEncodingException e) {
-            throw new SpoqnException(e);
-        }
+        return JWT.create().withIssuer(issuer()).withSubject(username).sign(alg());
     }
 
     /**
@@ -69,18 +64,19 @@ public class Logins {
      *             If the token is invalid or expired
      */
     public String resolveUsername(String token) {
-
-        Algorithm alg;
-        try {
-            alg = Algorithm.HMAC256(key());
-        } catch (IllegalArgumentException | UnsupportedEncodingException e) {
-            throw new SpoqnException(e);
-        }
         
         try {
-            return JWT.require(alg).withIssuer(issuer()).build().verify(token).getSubject();
+            return JWT.require(alg()).withIssuer(issuer()).build().verify(token).getSubject();
         } catch (JWTVerificationException e) {
             throw new AuthenticationException(e);
+        }
+    }
+
+    private Algorithm alg() {
+        try {
+            return Algorithm.HMAC256(key());
+        } catch (IllegalArgumentException | UnsupportedEncodingException e) {
+            throw new SpoqnException(e);
         }
     }
 
