@@ -23,6 +23,7 @@ import com.spoqn.server.data.entities.Login;
 public class LoginResource {
 
     private static final String TOKEN = "token";
+    private static final String CHALLENGE = "Bearer";
 
     @Resource
     private Logins logins;
@@ -40,7 +41,7 @@ public class LoginResource {
         try {
             return Collections.singletonMap(TOKEN, logins.authenticate(login));
         } catch (AuthenticationException e) {
-            throw new NotAuthorizedException("BAD_LOGIN", e);
+            throw new NotAuthorizedException("BAD_LOGIN", e, CHALLENGE);
         }
     }
 }
