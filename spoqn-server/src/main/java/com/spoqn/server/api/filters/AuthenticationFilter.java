@@ -2,6 +2,9 @@ package com.spoqn.server.api.filters;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.Priority;
 import javax.annotation.Resource;
@@ -20,6 +23,8 @@ import org.springframework.stereotype.Component;
 import com.spoqn.server.core.Logins;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 
+import lombok.Data;
+
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 @Component
@@ -27,10 +32,17 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     private static final String AUTH_SCHEME = "Bearer";
     private static final String AUTH_PREFIX = "Bearer ";
-    private static final String LOGIN_PATH_EXCLUSION = "login";
 
     private static final String CHALLENGE_NO_AUTH = "Bearer";
     private static final String CHALLENGE_BAD_AUTH = "Bearer error=\"invalid_token\"";
+
+    private static final Set<RequestPattern> EXCLUSIONS;
+    static {
+        Set<RequestPattern> exclusions = new HashSet<>();
+        exclusions.add(new RequestPattern("POST", "login"));
+        exclusions.add(new RequestPattern("POST", "users"));
+        EXCLUSIONS = Collections.unmodifiableSet(exclusions);
+    }
 
     @Resource
     private Logins logins;
@@ -41,8 +53,9 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
 
+        String method = requestContext.getMethod();
         String path = requestContext.getUriInfo().getPath();
-        if (LOGIN_PATH_EXCLUSION.equals(path))
+        if (EXCLUSIONS.contains(new RequestPattern(method, path)))
             return;
 
         String auth = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
@@ -60,6 +73,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         SecurityContext baseSc = requestContext.getSecurityContext();
         SecurityContext sc = new UserSecurityContext(baseSc, username);
         requestContext.setSecurityContext(sc);
+    }
+
+    @Data
+    public static class RequestPattern {
+        private final String method;
+        private final String path;
     }
 
     private class UserSecurityContext implements SecurityContext {

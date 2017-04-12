@@ -21,9 +21,13 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.Expose;
 
 @Provider
 @Consumes({ MediaType.APPLICATION_JSON, "text/json" })
@@ -34,7 +38,10 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     @PostConstruct
     public void init() {
-        gson = new Gson();
+        gson = new GsonBuilder()
+                .addSerializationExclusionStrategy(new SerializationExclusionStrategy())
+                .addDeserializationExclusionStrategy(new DeserializationExclusionStrategy())
+                .create();
     }
 
     @Override
@@ -78,4 +85,31 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         }
     }
 
+    private static class SerializationExclusionStrategy implements ExclusionStrategy {
+
+        @Override
+        public boolean shouldSkipField(FieldAttributes f) {
+            Expose expose = f.getAnnotation(Expose.class);
+            return expose != null && !expose.serialize();
+        }
+
+        @Override
+        public boolean shouldSkipClass(Class<?> clazz) {
+            return false;
+        }
+    }
+
+    private static class DeserializationExclusionStrategy implements ExclusionStrategy {
+
+        @Override
+        public boolean shouldSkipField(FieldAttributes f) {
+            Expose expose = f.getAnnotation(Expose.class);
+            return expose != null && !expose.deserialize();
+        }
+
+        @Override
+        public boolean shouldSkipClass(Class<?> clazz) {
+            return false;
+        }
+    }
 }
