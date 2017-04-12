@@ -1,5 +1,6 @@
 package com.spoqn.server.core;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -7,6 +8,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
 import com.spoqn.server.data.entities.Login;
@@ -49,13 +52,20 @@ public class Logins {
     }
 
     private String issueToken(String username) {
-        String token = generateToken();
+        String token = generateToken(username);
         tokens.put(token, username);
         return token;
     }
 
-    private String generateToken() {
-        return UUID.randomUUID().toString();
+    private String generateToken(String username) {
+
+        try {
+            Algorithm alg = Algorithm.HMAC256("TODO: secret");
+            return JWT.create().withIssuer("spoqn.com").withSubject(username).sign(alg);
+        } catch (IllegalArgumentException | UnsupportedEncodingException e) {
+            // TODO throw a spoqn-exception
+            throw new RuntimeException(e);
+        }
     }
 
     /**
