@@ -17,8 +17,6 @@ import com.spoqn.server.data.entities.Login;
 @Component
 public class Logins {
 
-    private static final String TODO_SECRET = "TODO: secret";
-
     // don't look at this
     private Map<String, String> logins = new HashMap<>();
 
@@ -55,8 +53,8 @@ public class Logins {
     private String issueToken(String username) {
 
         try {
-            Algorithm alg = Algorithm.HMAC256(TODO_SECRET);
-            return JWT.create().withIssuer("spoqn.com").withSubject(username).sign(alg);
+            Algorithm alg = Algorithm.HMAC256(key());
+            return JWT.create().withIssuer(issuer()).withSubject(username).sign(alg);
         } catch (IllegalArgumentException | UnsupportedEncodingException e) {
             // TODO throw a spoqn-exception
             throw new RuntimeException(e);
@@ -74,16 +72,26 @@ public class Logins {
 
         Algorithm alg;
         try {
-            alg = Algorithm.HMAC256(TODO_SECRET);
+            alg = Algorithm.HMAC256(key());
         } catch (IllegalArgumentException | UnsupportedEncodingException e) {
             // TODO throw a spoqn-exception
             throw new RuntimeException(e);
         }
         
         try {
-            return JWT.require(alg).withIssuer("spoqn.com").build().verify(token).getSubject();
+            return JWT.require(alg).withIssuer(issuer()).build().verify(token).getSubject();
         } catch (JWTVerificationException e) {
             throw new AuthenticationException(e);
         }
+    }
+
+    private String key() {
+        // TODO read secret key from file
+        return "secret";
+    }
+
+    private String issuer() {
+        // TODO read issuer from file
+        return "spoqn.com";
     }
 }
