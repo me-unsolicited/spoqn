@@ -8,7 +8,7 @@ import javax.ws.rs.ext.Provider;
 import com.spoqn.server.data.entities.CodedError;
 
 @Provider
-public class ApplicationExceptionHandler implements ExceptionMapper<WebApplicationException> {
+public class ApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
     @Override
     public Response toResponse(WebApplicationException exception) {

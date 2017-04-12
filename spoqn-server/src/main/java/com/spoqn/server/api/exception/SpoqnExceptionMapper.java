@@ -11,7 +11,7 @@ import com.spoqn.server.data.entities.CodedError;
 import com.spoqn.server.data.entities.UnknownCodedError;
 
 @Provider
-public class SpoqnExceptionHandler implements ExceptionMapper<SpoqnException> {
+public class SpoqnExceptionMapper implements ExceptionMapper<SpoqnException> {
 
     @Override
     public Response toResponse(SpoqnException exception) {
