@@ -7,8 +7,11 @@ import java.time.temporal.TemporalAmount;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -29,6 +32,7 @@ public class Logins {
 
     // don't look at this
     private Map<String, String> logins = new HashMap<>();
+    private Map<String, Set<String>> refreshTokens = new HashMap<>();
 
     /**
      * @throws ExistingLoginException
@@ -44,7 +48,7 @@ public class Logins {
     }
 
     /**
-     * @return Session token
+     * @return Access and refresh tokens
      * @throws AuthenticationException
      *             If authentication has failed
      */
@@ -57,13 +61,37 @@ public class Logins {
         if (!authenticated)
             throw new AuthenticationException();
 
-        String access = issueToken(username);
-        String refresh = "TODO";
+        String access = issueAccessToken(username);
+        String refresh = issueRefreshToken(username);
 
         return new TokenMap(access, refresh);
     }
 
-    private String issueToken(String username) {
+    /**
+     * @return Refreshed access token and existing refresh token
+     * @throws AuthenticationException
+     *             If authentication has failed
+     */
+    public TokenMap refresh(@NonNull String username, @NonNull String refresh) {
+
+        if (username.isEmpty())
+            throw new AuthenticationException();
+
+        Set<String> tokens = refreshTokens.get(username);
+        if (tokens == null || !tokens.contains(refresh))
+            throw new AuthenticationException();
+
+        return new TokenMap(issueAccessToken(username), refresh);
+    }
+
+    public void revoke(@NonNull String username) {
+
+        Set<String> tokens = refreshTokens.get(username);
+        if (tokens != null)
+            tokens.clear();
+    }
+
+    private String issueAccessToken(String username) {
 
         Map<String, Object> header = Collections.singletonMap("typ", "JWT");
 
@@ -79,6 +107,22 @@ public class Logins {
                 .withNotBefore(issued)
                 .withExpiresAt(expiration)
                 .sign(alg());
+    }
+
+    private String issueRefreshToken(String username) {
+
+        // not thread safe but... this is temporary until db so... :|
+
+        Set<String> tokens = refreshTokens.get(username);
+        if (tokens == null) {
+            tokens = new HashSet<>();
+            refreshTokens.put(username, tokens);
+        }
+
+        String token = UUID.randomUUID().toString();
+        tokens.add(token);
+
+        return token;
     }
 
     /**
