@@ -9,9 +9,11 @@ import lombok.Data;
 
 @Data
 public class Message {
+
+    private String text;
+
     @Reject private UUID id;
     @Reject private String user;
     @Reject private String displayName;
-    private String text;
     @Reject private Instant timestamp;
 }
