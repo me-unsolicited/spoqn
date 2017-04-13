@@ -18,7 +18,7 @@ export class Message extends React.Component {
                                         <div className="header">
                                             <div>
                                                 <small>{moment.unix(message.timestamp.seconds).format('MMMM Do YYYY, h:mm:ss a')}</small>
-                                                <strong className="pull-right">{message.user}</strong>
+                                                <strong className="pull-right">{message.displayName}</strong>
                                             </div>
                                         </div>
                                         <p className="message-content">{message.text}</p>
@@ -43,7 +43,7 @@ export class Message extends React.Component {
                                     <div className="chat-body inline-block">
                                         <div className="header">
                                             <div>
-                                                <strong>{message.user}</strong>
+                                                <strong>{message.displayName}</strong>
                                                 <small
                                                     className="pull-right">{moment.unix(message.timestamp.seconds).format('MMMM Do YYYY, h:mm:ss a')}</small>
                                             </div>
