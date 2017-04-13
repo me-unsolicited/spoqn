@@ -19,6 +19,9 @@ import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
 import com.spoqn.server.core.exceptions.SpoqnException;
 import com.spoqn.server.data.entities.Login;
+import com.spoqn.server.data.entities.TokenMap;
+
+import lombok.NonNull;
 
 @Component
 public class Logins {
@@ -46,22 +49,25 @@ public class Logins {
      * @throws AuthenticationException
      *             If authentication has failed
      */
-    public String authenticate(Login login) {
+    public TokenMap authenticate(@NonNull String username, @NonNull String password) {
 
-        String username = login.getUsername();
-        String password = login.getPassword();
+        if (username.isEmpty() || password.isEmpty())
+            throw new AuthenticationException();
+
         boolean authenticated = Objects.equals(password, logins.get(username));
-
         if (!authenticated)
             throw new AuthenticationException();
 
-        return issueToken(username);
+        String access = issueToken(username);
+        String refresh = "TODO";
+
+        return new TokenMap(access, refresh);
     }
 
     private String issueToken(String username) {
 
         Map<String, Object> header = Collections.singletonMap("typ", "JWT");
-        
+
         Instant now = Instant.now();
         Date issued = Date.from(now);
         Date expiration = Date.from(now.plus(TOKEN_LIFETIME));
