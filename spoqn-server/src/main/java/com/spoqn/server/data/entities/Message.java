@@ -3,13 +3,15 @@ package com.spoqn.server.data.entities;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.spoqn.server.api.json.annotations.Reject;
+
 import lombok.Data;
 
 @Data
 public class Message {
-    private UUID id;
-    private String user;
-    private String displayName;
+    @Reject private UUID id;
+    @Reject private String user;
+    @Reject private String displayName;
     private String text;
-    private Instant timestamp;
+    @Reject private Instant timestamp;
 }
