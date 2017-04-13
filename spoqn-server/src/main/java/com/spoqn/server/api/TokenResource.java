@@ -21,7 +21,7 @@ import com.spoqn.server.data.entities.TokenMap;
 
 @Component
 @Path("/token")
-public class LoginResource {
+public class TokenResource {
 
     private static final String AUTH_PREFIX = "Basic ";
     private static final String AUTH_SEPARATOR = ":";
