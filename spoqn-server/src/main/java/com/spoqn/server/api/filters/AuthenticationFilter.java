@@ -39,7 +39,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     private static final Set<RequestPattern> EXCLUSIONS;
     static {
         Set<RequestPattern> exclusions = new HashSet<>();
-        exclusions.add(new RequestPattern("POST", "login"));
+        exclusions.add(new RequestPattern("GET", "token"));
         exclusions.add(new RequestPattern("POST", "users"));
         EXCLUSIONS = Collections.unmodifiableSet(exclusions);
     }

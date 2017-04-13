@@ -5,9 +5,9 @@ import java.util.Base64;
 
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
@@ -20,7 +20,7 @@ import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.data.entities.TokenMap;
 
 @Component
-@Path("/login")
+@Path("/token")
 public class LoginResource {
 
     private static final String AUTH_PREFIX = "Basic ";
@@ -30,7 +30,7 @@ public class LoginResource {
     @Resource
     private Logins logins;
 
-    @POST
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public TokenMap login(@HeaderParam(HttpHeaders.AUTHORIZATION) String auth) {
