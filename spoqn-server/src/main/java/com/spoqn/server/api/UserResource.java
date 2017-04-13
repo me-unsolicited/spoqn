@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import com.spoqn.server.core.Logins;
 import com.spoqn.server.core.Users;
-import com.spoqn.server.data.entities.Login;
 import com.spoqn.server.data.entities.User;
 
 @Component
@@ -25,7 +24,7 @@ public class UserResource {
 
     @POST
     public User post(User user) {
-        logins.create(new Login(user.getUsername(), user.getPassword()));
+        logins.create(user.getUsername(), user.getPassword());
         return users.create(user);
     }
 

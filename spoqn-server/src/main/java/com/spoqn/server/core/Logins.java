@@ -18,7 +18,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
 import com.spoqn.server.core.exceptions.SpoqnException;
-import com.spoqn.server.data.entities.Login;
 import com.spoqn.server.data.entities.TokenMap;
 
 import lombok.NonNull;
@@ -35,13 +34,13 @@ public class Logins {
      * @throws ExistingLoginException
      *             If a user already exists with the provided username
      */
-    public void create(Login login) {
+    public void create(String username, String password) {
 
-        if (logins.containsKey(login.getUsername())) {
+        if (logins.containsKey(username)) {
             throw new ExistingLoginException();
         }
 
-        logins.put(login.getUsername(), login.getPassword());
+        logins.put(username, password);
     }
 
     /**
