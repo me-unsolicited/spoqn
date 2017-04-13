@@ -1,6 +1,6 @@
 package com.spoqn.server.data.entities;
 
-import com.google.gson.annotations.Expose;
+import com.spoqn.server.api.json.annotations.Hide;
 
 import lombok.Data;
 import lombok.ToString;
@@ -12,6 +12,6 @@ public class User {
     private String displayName;
     private String email;
 
-    @Expose(serialize=false)
+    @Hide
     private String password;
 }
