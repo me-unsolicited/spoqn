@@ -16,8 +16,7 @@ import com.spoqn.server.data.entities.Message;
 @Component
 public class Messages {
 
-    @Resource
-    private Users users;
+    @Resource private Users users;
 
     private List<Message> messages = new ArrayList<>();
     {
@@ -27,26 +26,27 @@ public class Messages {
     }
 
     private Message message(String user, String displayName, String text) {
-        Message message = new Message();
-        message.setId(UUID.randomUUID());
-        message.setUser(user);
-        message.setDisplayName(displayName);
-        message.setText(text);
-        message.setTimestamp(Instant.now());
-        return message;
+        return Message.builder()
+                .id(UUID.randomUUID())
+                .user(user)
+                .displayName(displayName)
+                .text(text)
+                .timestamp(Instant.now())
+                .build();
     }
 
     public Message create(Principal principal, Message message) {
 
         String username = principal.getName();
 
-        message.setId(UUID.randomUUID());
-        message.setUser(username);
-        message.setDisplayName(users.read(username).getDisplayName());
-        message.setTimestamp(Instant.now());
+        message = message.toBuilder()
+                .id(UUID.randomUUID())
+                .user(username)
+                .displayName(users.read(username).getDisplayName())
+                .timestamp(Instant.now())
+                .build();
 
         messages.add(message);
-
         return message;
     }
 
