@@ -23,18 +23,15 @@ import com.spoqn.server.data.entities.Message;
 @Path("/messages")
 public class MessageResource {
 
-    @Resource
-    private Messages messages;
-
-    @Context
-    private SecurityContext sc;
+    @Resource private Messages messages;
+    @Context private SecurityContext sc;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Message> get() {
         return messages.read();
     }
-    
+
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)

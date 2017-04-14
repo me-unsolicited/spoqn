@@ -34,11 +34,8 @@ public class TokenResource {
     private static final String AUTH_SEPARATOR = ":";
     private static final String CHALLENGE = "Basic";
 
-    @Resource
-    private Logins logins;
-
-    @Context
-    private SecurityContext sc;
+    @Resource private Logins logins;
+    @Context private SecurityContext sc;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

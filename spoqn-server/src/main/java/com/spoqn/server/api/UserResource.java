@@ -18,7 +18,6 @@ import com.spoqn.server.data.entities.User;
 public class UserResource {
 
     @Resource private Logins logins;
-
     @Resource private Users users;
 
     @PostConstruct
