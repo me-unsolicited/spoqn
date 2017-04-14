@@ -4,6 +4,8 @@ import java.security.Principal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,11 +20,15 @@ public class Messages {
 
     @Resource private Users users;
 
-    private List<Message> messages = new ArrayList<>();
+    private HashMap<UUID, Message> messages = new LinkedHashMap<>();
     {
         // temporary until UI controlled
-        messages.add(message("frodo", "Frodo", "Hello, World!"));
-        messages.add(message("bilbo", "Bilbo", "new phone who dis"));
+
+        Message message0 = message("frodo", "Frodo", "Hello, World!");
+        Message message1 = message("bilbo", "Bilbo", "new phone who dis");
+
+        messages.put(message0.getId(), message0);
+        messages.put(message1.getId(), message1);
     }
 
     private Message message(String user, String displayName, String text) {
@@ -46,11 +52,15 @@ public class Messages {
                 .timestamp(Instant.now())
                 .build();
 
-        messages.add(message);
+        messages.put(message.getId(), message);
         return message;
     }
 
     public List<Message> read() {
-        return Collections.unmodifiableList(messages);
+        return Collections.unmodifiableList(new ArrayList<>(messages.values()));
+    }
+
+    public Message read(UUID id) {
+        return messages.get(id);
     }
 }
