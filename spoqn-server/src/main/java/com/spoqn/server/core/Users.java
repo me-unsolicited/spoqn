@@ -14,11 +14,13 @@ public class Users {
     private final Map<String, User> users = new HashMap<>();
 
     /**
-     * @return 
+     * @return
      * @throws ExistingLoginException
      *             If a user already exists with the provided username
      */
     public User create(User user) {
+
+        user = user.toBuilder().password(null).build();
 
         String username = user.getUsername();
         if (users.containsKey(username))

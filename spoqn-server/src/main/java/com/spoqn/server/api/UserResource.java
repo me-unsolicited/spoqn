@@ -17,28 +17,28 @@ import com.spoqn.server.data.entities.User;
 @Path("/users")
 public class UserResource {
 
-    @Resource
-    private Logins logins;
+    @Resource private Logins logins;
 
-    @Resource
-    private Users users;
+    @Resource private Users users;
 
     @PostConstruct
     public void init() {
 
         // create some development users; temporary obviously
 
-        User frodo = new User();
-        frodo.setUsername("frodo");
-        frodo.setDisplayName("Frodo");
-        frodo.setEmail("frodo@spoqn.com");
-        frodo.setPassword("password");
+        User frodo = User.builder()
+                .username("frodo")
+                .displayName("Frodo")
+                .email("frodo@spoqn.com")
+                .password("password")
+                .build();
 
-        User bilbo = new User();
-        bilbo.setUsername("bilbo");
-        bilbo.setDisplayName("Bilbo");
-        bilbo.setEmail("bilbo@spoqn.com");
-        bilbo.setPassword("password");
+        User bilbo = User.builder()
+                .username("bilbo")
+                .displayName("Bilbo")
+                .email("bilbo@spoqn.com")
+                .password("password")
+                .build();
 
         post(frodo);
         post(bilbo);
