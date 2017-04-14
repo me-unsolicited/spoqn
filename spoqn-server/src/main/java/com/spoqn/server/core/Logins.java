@@ -61,12 +61,9 @@ public class Logins {
         if (!authenticated)
             throw new AuthenticationException();
 
-        String access = issueAccessToken(username);
-        String refresh = issueRefreshToken(username);
-
         return TokenMap.builder()
-                .access(access)
-                .refresh(refresh)
+                .access(issueAccessToken(username))
+                .refresh(issueRefreshToken(username))
                 .build();
     }
 
