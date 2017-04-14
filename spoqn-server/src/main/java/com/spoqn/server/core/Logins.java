@@ -64,7 +64,10 @@ public class Logins {
         String access = issueAccessToken(username);
         String refresh = issueRefreshToken(username);
 
-        return new TokenMap(access, refresh);
+        return TokenMap.builder()
+                .access(access)
+                .refresh(refresh)
+                .build();
     }
 
     /**
@@ -81,7 +84,10 @@ public class Logins {
         if (tokens == null || !tokens.contains(refresh))
             throw new AuthenticationException();
 
-        return new TokenMap(issueAccessToken(username), refresh);
+        return TokenMap.builder()
+                .access(issueAccessToken(username))
+                .refresh(refresh)
+                .build();
     }
 
     public void revoke(@NonNull String username) {
