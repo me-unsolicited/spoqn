@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import com.spoqn.server.api.exception.ErrorCode;
 import com.spoqn.server.core.Logins;
 import com.spoqn.server.core.Users;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
@@ -62,9 +63,9 @@ public class UserResource {
             logins.create(user.getUsername(), user.getPassword());
             return users.create(user);
         } catch (ExistingLoginException e) {
-            throw new BadRequestException("USERNAME_TAKEN");
+            throw new BadRequestException(ErrorCode.USERNAME_TAKEN.name());
         } catch (InadequatePasswordException e) {
-            throw new BadRequestException("PASSWORD_INADEQUATE");
+            throw new BadRequestException(ErrorCode.PASSWORD_INADEQUATE.name());
         }
     }
 

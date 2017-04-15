@@ -16,6 +16,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
+import com.spoqn.server.api.exception.ErrorCode;
 import com.spoqn.server.core.Logins;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 
@@ -51,14 +52,14 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
         String auth = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
         if (auth == null || !auth.startsWith(AUTH_PREFIX))
-            throw new NotAuthorizedException("NO_AUTH_HEADER", CHALLENGE_NO_AUTH);
+            throw new NotAuthorizedException(ErrorCode.NO_AUTH_HEADER, CHALLENGE_NO_AUTH);
 
         String token = auth.substring(AUTH_PREFIX.length());
         String username;
         try {
             username = logins.resolveUsername(token);
         } catch (AuthenticationException e) {
-            throw new NotAuthorizedException("BAD_TOKEN", CHALLENGE_BAD_AUTH);
+            throw new NotAuthorizedException(ErrorCode.BAD_TOKEN, CHALLENGE_BAD_AUTH);
         }
 
         SecurityContext baseSc = requestContext.getSecurityContext();
