@@ -3,12 +3,12 @@ package com.spoqn.server.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
+import javax.inject.Singleton;
 
 import com.spoqn.server.core.exceptions.ExistingLoginException;
 import com.spoqn.server.data.entities.User;
 
-@Component
+@Singleton
 public class Users {
 
     private final Map<String, User> users = new HashMap<>();

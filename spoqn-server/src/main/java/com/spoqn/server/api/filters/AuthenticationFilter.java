@@ -8,17 +8,13 @@ import java.util.Set;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
-
-import org.springframework.stereotype.Component;
 
 import com.spoqn.server.core.Logins;
 import com.spoqn.server.core.exceptions.AuthenticationException;
@@ -27,7 +23,6 @@ import lombok.Data;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
-@Component
 public class AuthenticationFilter implements ContainerRequestFilter {
 
     private static final String AUTH_SCHEME = "Bearer";
@@ -44,11 +39,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         EXCLUSIONS = Collections.unmodifiableSet(exclusions);
     }
 
-    @Inject
-    private Logins logins;
-
-    @Context
-    private HttpServletRequest request;
+    @Inject private Logins logins;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {

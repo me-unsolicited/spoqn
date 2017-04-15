@@ -14,12 +14,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
-import org.springframework.stereotype.Component;
-
 import com.spoqn.server.core.Messages;
 import com.spoqn.server.data.entities.Message;
 
-@Component
 @Path("/messages")
 public class MessageResource {
 

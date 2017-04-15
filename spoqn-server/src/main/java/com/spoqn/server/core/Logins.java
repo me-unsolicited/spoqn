@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import org.springframework.stereotype.Component;
+import javax.inject.Singleton;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -25,7 +25,7 @@ import com.spoqn.server.data.entities.TokenMap;
 
 import lombok.NonNull;
 
-@Component
+@Singleton
 public class Logins {
 
     private static final TemporalAmount TOKEN_LIFETIME = Duration.ofMinutes(15L);

@@ -17,8 +17,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
-import org.springframework.stereotype.Component;
-
 import com.spoqn.server.core.Logins;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.data.entities.TokenMap;
@@ -26,7 +24,6 @@ import com.spoqn.server.data.entities.TokenMap;
 import lombok.Data;
 import lombok.ToString;
 
-@Component
 @Path("/token")
 public class TokenResource {
 

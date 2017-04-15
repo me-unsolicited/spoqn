@@ -7,23 +7,33 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.springframework.stereotype.Component;
-
 import com.spoqn.server.core.Logins;
 import com.spoqn.server.core.Users;
 import com.spoqn.server.data.entities.User;
 
-@Component
+import lombok.Synchronized;
+
 @Path("/users")
 public class UserResource {
+
+    private static boolean initialized = false;
 
     @Inject private Logins logins;
     @Inject private Users users;
 
     @PostConstruct
     public void init() {
+        initOnce(this);
+    }
+
+    @Synchronized
+    private static void initOnce(UserResource api) {
 
         // create some development users; temporary obviously
+
+        if (initialized)
+            return;
+        initialized = true;
 
         User frodo = User.builder()
                 .username("frodo")
@@ -39,8 +49,8 @@ public class UserResource {
                 .password("password")
                 .build();
 
-        post(frodo);
-        post(bilbo);
+        api.post(frodo);
+        api.post(bilbo);
     }
 
     @POST

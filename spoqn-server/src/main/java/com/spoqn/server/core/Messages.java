@@ -10,12 +10,11 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
-
-import org.springframework.stereotype.Component;
+import javax.inject.Singleton;
 
 import com.spoqn.server.data.entities.Message;
 
-@Component
+@Singleton
 public class Messages {
 
     @Inject private Users users;
