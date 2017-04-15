@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ import com.spoqn.server.data.entities.Message;
 @Component
 public class Messages {
 
-    @Resource private Users users;
+    @Inject private Users users;
 
     private HashMap<UUID, Message> messages = new LinkedHashMap<>();
     {

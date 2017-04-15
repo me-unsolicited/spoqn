@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Priority;
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Priorities;
@@ -44,7 +44,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         EXCLUSIONS = Collections.unmodifiableSet(exclusions);
     }
 
-    @Resource
+    @Inject
     private Logins logins;
 
     @Context

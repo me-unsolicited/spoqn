@@ -1,7 +1,7 @@
 package com.spoqn.server.api;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -17,8 +17,8 @@ import com.spoqn.server.data.entities.User;
 @Path("/users")
 public class UserResource {
 
-    @Resource private Logins logins;
-    @Resource private Users users;
+    @Inject private Logins logins;
+    @Inject private Users users;
 
     @PostConstruct
     public void init() {

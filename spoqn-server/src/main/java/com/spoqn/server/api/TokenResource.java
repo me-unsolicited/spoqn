@@ -3,7 +3,7 @@ package com.spoqn.server.api;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -34,7 +34,7 @@ public class TokenResource {
     private static final String AUTH_SEPARATOR = ":";
     private static final String CHALLENGE = "Basic";
 
-    @Resource private Logins logins;
+    @Inject private Logins logins;
     @Context private SecurityContext sc;
 
     @GET

@@ -3,7 +3,7 @@ package com.spoqn.server.api;
 import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -23,7 +23,7 @@ import com.spoqn.server.data.entities.Message;
 @Path("/messages")
 public class MessageResource {
 
-    @Resource private Messages messages;
+    @Inject private Messages messages;
     @Context private SecurityContext sc;
 
     @GET
