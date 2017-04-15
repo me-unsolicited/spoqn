@@ -11,6 +11,7 @@ import javax.ws.rs.PathParam;
 import com.spoqn.server.core.Logins;
 import com.spoqn.server.core.Users;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
+import com.spoqn.server.core.exceptions.InadequatePasswordException;
 import com.spoqn.server.data.entities.User;
 
 import lombok.Synchronized;
@@ -62,6 +63,8 @@ public class UserResource {
             return users.create(user);
         } catch (ExistingLoginException e) {
             throw new BadRequestException("USERNAME_TAKEN");
+        } catch (InadequatePasswordException e) {
+            throw new BadRequestException("PASSWORD_INADEQUATE");
         }
     }
 

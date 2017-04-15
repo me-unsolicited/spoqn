@@ -20,6 +20,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
+import com.spoqn.server.core.exceptions.InadequatePasswordException;
 import com.spoqn.server.core.exceptions.SpoqnException;
 import com.spoqn.server.data.entities.TokenMap;
 
@@ -27,6 +28,8 @@ import lombok.NonNull;
 
 @Singleton
 public class Logins {
+
+    private static final int PASSWORD_MIN_LENGTH = 8;
 
     private static final TemporalAmount TOKEN_LIFETIME = Duration.ofMinutes(15L);
 
@@ -38,13 +41,20 @@ public class Logins {
      * @throws ExistingLoginException
      *             If a user already exists with the provided username
      */
-    public void create(String username, String password) {
+    public void create(@NonNull String username, @NonNull String password) {
 
         if (logins.containsKey(username)) {
             throw new ExistingLoginException();
         }
 
+        validatePassword(password);
+
         logins.put(username, password);
+    }
+
+    private void validatePassword(String password) {
+        if (password.length() < PASSWORD_MIN_LENGTH)
+            throw new InadequatePasswordException();
     }
 
     /**
