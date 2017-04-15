@@ -1,8 +1,10 @@
 package com.spoqn.server.data.entities;
 
-import lombok.Data;
+import lombok.Value;
+import lombok.experimental.NonFinal;
 
-@Data
+@Value
+@NonFinal
 public class CodedError {
-    private final String code;
+    String code;
 }

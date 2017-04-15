@@ -3,17 +3,17 @@ package com.spoqn.server.data.entities;
 import com.spoqn.server.api.json.annotations.Hide;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.ToString;
+import lombok.Value;
 
-@Data
+@Value
 @ToString(exclude = "password")
 @Builder(toBuilder = true)
 public class User {
 
-    private final String username;
-    private final String displayName;
-    private final String email;
+    String username;
+    String displayName;
+    String email;
 
-    @Hide private final String password;
+    @Hide String password;
 }

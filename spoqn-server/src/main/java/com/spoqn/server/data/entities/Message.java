@@ -5,17 +5,20 @@ import java.util.UUID;
 
 import com.spoqn.server.api.json.annotations.Reject;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Message {
 
-    private final String text;
+    String text;
 
-    @Reject private final UUID id;
-    @Reject private final String user;
-    @Reject private final String displayName;
-    @Reject private final Instant timestamp;
+    @Reject UUID id;
+    @Reject String user;
+    @Reject String displayName;
+    @Reject Instant timestamp;
 }

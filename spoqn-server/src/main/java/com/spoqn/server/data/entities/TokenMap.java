@@ -1,13 +1,13 @@
 package com.spoqn.server.data.entities;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.ToString;
+import lombok.Value;
 
-@Data
+@Value
 @ToString(exclude="refresh")
 @Builder(toBuilder = true)
 public class TokenMap {
-    private final String access;
-    private final String refresh;
+    String access;
+    String refresh;
 }
