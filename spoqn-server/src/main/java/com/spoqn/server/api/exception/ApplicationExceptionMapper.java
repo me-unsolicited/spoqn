@@ -1,5 +1,9 @@
 package com.spoqn.server.api.exception;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -13,10 +17,15 @@ public class ApplicationExceptionMapper implements ExceptionMapper<WebApplicatio
     @Override
     public Response toResponse(WebApplicationException exception) {
 
-        ErrorCode code = ErrorCode.from(exception.getMessage());
-        String description = code == ErrorCode.UNKNOWN ? exception.getMessage() : code.description();
-        CodedError error = new CodedError(code.name(), description);
+        List<CodedError> errors = new ArrayList<>();
 
-        return Response.fromResponse(exception.getResponse()).entity(error).build();
+        Optional<ErrorCodes> codes = ErrorCodes.from(exception.getMessage());
+        if (codes.isPresent())
+            for (ErrorCode code : codes.get().getCodes())
+                errors.add(new CodedError(code.name(), code.description()));
+        else
+            errors.add(new CodedError(ErrorCode.UNKNOWN.name(), exception.getMessage()));
+
+        return Response.fromResponse(exception.getResponse()).entity(errors).build();
     }
 }
