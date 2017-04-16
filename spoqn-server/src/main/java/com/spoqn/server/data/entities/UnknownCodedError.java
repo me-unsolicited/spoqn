@@ -2,6 +2,8 @@ package com.spoqn.server.data.entities;
 
 import java.util.UUID;
 
+import com.spoqn.server.api.exception.ErrorCode;
+
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -11,12 +13,10 @@ import lombok.Value;
 @ToString(callSuper = true)
 public class UnknownCodedError extends CodedError {
 
-    public static final String CODE = "UNKNOWN";
-
     UUID incident;
 
     public UnknownCodedError(UUID incident) {
-        super(CODE);
+        super(ErrorCode.UNKNOWN.name(), ErrorCode.UNKNOWN.description());
         this.incident = incident;
     }
 }

@@ -7,4 +7,5 @@ import lombok.experimental.NonFinal;
 @NonFinal
 public class CodedError {
     String code;
+    String description;
 }

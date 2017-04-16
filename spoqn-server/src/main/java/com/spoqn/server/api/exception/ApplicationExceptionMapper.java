@@ -12,7 +12,11 @@ public class ApplicationExceptionMapper implements ExceptionMapper<WebApplicatio
 
     @Override
     public Response toResponse(WebApplicationException exception) {
-        CodedError error = new CodedError(exception.getMessage());
+
+        ErrorCode code = ErrorCode.from(exception.getMessage());
+        String description = code == ErrorCode.UNKNOWN ? exception.getMessage() : code.description();
+        CodedError error = new CodedError(code.name(), description);
+
         return Response.fromResponse(exception.getResponse()).entity(error).build();
     }
 }
