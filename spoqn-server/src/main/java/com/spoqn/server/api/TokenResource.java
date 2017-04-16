@@ -32,6 +32,9 @@ public class TokenResource {
     private static final String AUTH_SEPARATOR = ":";
     private static final String CHALLENGE = "Basic";
 
+    // temporary hack to force init of dev users
+    @SuppressWarnings("unused") @Inject private UserResource users;
+
     @Inject private Logins logins;
     @Context private SecurityContext sc;
 
