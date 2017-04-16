@@ -58,7 +58,7 @@ public class TokenResource {
         try {
             return logins.refresh(auth.getUsername(), auth.getPassword());
         } catch (AuthenticationException e) {
-            throw new NotAuthorizedException(ErrorCode.BAD_REFRESH_TOKEN, e, CHALLENGE);
+            throw new NotAuthorizedException(ErrorCode.BAD_REFRESH_TOKEN.name(), e, CHALLENGE);
         }
     }
 
@@ -66,14 +66,14 @@ public class TokenResource {
         try {
             return logins.authenticate(auth.getUsername(), auth.getPassword());
         } catch (AuthenticationException e) {
-            throw new NotAuthorizedException(ErrorCode.BAD_LOGIN, e, CHALLENGE);
+            throw new NotAuthorizedException(ErrorCode.BAD_LOGIN.name(), e, CHALLENGE);
         }
     }
 
     private Auth readAuth(String auth) {
 
         if (auth == null || !auth.startsWith(AUTH_PREFIX))
-            throw new NotAuthorizedException(ErrorCode.EXPECTED_BASIC_AUTH, CHALLENGE);
+            throw new NotAuthorizedException(ErrorCode.EXPECTED_BASIC_AUTH.name(), CHALLENGE);
 
         String encodedAuth = auth.substring(AUTH_PREFIX.length()).trim();
         byte[] decodedAuth;
@@ -81,13 +81,13 @@ public class TokenResource {
         try {
             decodedAuth = Base64.getDecoder().decode(encodedAuth);
         } catch (IllegalArgumentException e) {
-            throw new NotAuthorizedException(ErrorCode.EXPECTED_BASIC_AUTH_BASE64, e, CHALLENGE);
+            throw new NotAuthorizedException(ErrorCode.EXPECTED_BASIC_AUTH_BASE64.name(), e, CHALLENGE);
         }
 
         String userAndPass = new String(decodedAuth, StandardCharsets.UTF_8);
         int sepIndex = userAndPass.indexOf(AUTH_SEPARATOR);
         if (sepIndex < 0)
-            throw new NotAuthorizedException(ErrorCode.MALFORMED_BASIC_AUTH, CHALLENGE);
+            throw new NotAuthorizedException(ErrorCode.MALFORMED_BASIC_AUTH.name(), CHALLENGE);
 
         String username = userAndPass.substring(0, sepIndex);
         String password = userAndPass.substring(sepIndex + 1);
