@@ -26,4 +26,14 @@
     <include refid="selectAll" />
     WHERE message_id = #{id}
   </select>
+
+  <select id="findAll">
+    <include refid="selectAll" />
+  </select>
+
+  <insert id="create" useGeneratedKeys="true" keyProperty="id">
+    INSERT message SET
+      message_text = ${text}
+      user_id = (SELECT user_id FROM user WHERE username = ${user})
+  </insert>
 </mapper>
