@@ -48,13 +48,6 @@ public class Logins {
      */
     public void create(@NonNull String username, @NonNull String password) {
 
-        // test
-        try {
-            new JndiDataSourceProvider("java:comp/env/dataSource").get().getConnection();
-        } catch (SQLException e) {
-            log.error("it didn't work", e);
-        }
-
         if (logins.containsKey(username)) {
             throw new ExistingLoginException();
         }
