@@ -17,7 +17,7 @@ public class Messages {
 
     public Message create(String username, Message message) {
         UUID id = mapper.create(message.toBuilder().user(username).build());
-        return mapper.findOne(id.toString());
+        return mapper.findOne(id);
     }
 
     public List<Message> read() {
@@ -25,6 +25,6 @@ public class Messages {
     }
 
     public Message read(UUID id) {
-        return mapper.findOne(id.toString());
+        return mapper.findOne(id);
     }
 }

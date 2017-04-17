@@ -12,6 +12,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
+import com.spoqn.server.data.handlers.HandlerHelper;
 import com.spoqn.server.data.mappers.MapperHelper;
 import com.squarespace.jersey2.guice.JerseyGuiceModule;
 import com.squarespace.jersey2.guice.JerseyGuiceUtils;
@@ -32,6 +33,7 @@ public class SpoqnContextListener extends GuiceServletContextListener {
                 bindDataSourceProvider(new JndiDataSourceProvider("java:comp/env/jdbc/dataSource"));
                 bindTransactionFactoryType(JdbcTransactionFactory.class);
                 addMapperClasses(MapperHelper.pkg());
+                addTypeHandlerClasses(HandlerHelper.pkg());
             }
         });
 
