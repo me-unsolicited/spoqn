@@ -11,7 +11,7 @@
     <result property="displayName"  column="user_display" />
   </resultMap>
 
-  <select id="findOne">
+  <sql id="selectAll">
     SELECT
       message_id
     , message_text
@@ -20,6 +20,10 @@
     , user_display
     FROM message
     INNER JOIN user ON message.user_id = user.user_id
+  </sql>
+
+  <select id="findOne">
+    <include refid="selectAll" />
     WHERE message_id = #{id}
   </select>
 </mapper>
