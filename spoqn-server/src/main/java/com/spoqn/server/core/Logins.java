@@ -1,6 +1,7 @@
 package com.spoqn.server.core;
 
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.TemporalAmount;
@@ -15,6 +16,8 @@ import java.util.UUID;
 
 import javax.inject.Singleton;
 
+import org.mybatis.guice.datasource.builtin.JndiDataSourceProvider;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
@@ -25,8 +28,10 @@ import com.spoqn.server.core.exceptions.SpoqnException;
 import com.spoqn.server.data.entities.TokenMap;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Singleton
+@Slf4j
 public class Logins {
 
     private static final int PASSWORD_MIN_LENGTH = 8;
@@ -42,6 +47,13 @@ public class Logins {
      *             If a user already exists with the provided username
      */
     public void create(@NonNull String username, @NonNull String password) {
+
+        // test
+        try {
+            new JndiDataSourceProvider("java:comp/env/dataSource").get().getConnection();
+        } catch (SQLException e) {
+            log.error("it didn't work", e);
+        }
 
         if (logins.containsKey(username)) {
             throw new ExistingLoginException();
