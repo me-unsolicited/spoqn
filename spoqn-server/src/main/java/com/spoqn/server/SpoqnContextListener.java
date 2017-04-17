@@ -29,7 +29,7 @@ public class SpoqnContextListener extends GuiceServletContextListener {
             @Override
             protected void initialize() {
                 environmentId("development");
-                bindDataSourceProvider(new JndiDataSourceProvider("java:comp/env/dataSource"));
+                bindDataSourceProvider(new JndiDataSourceProvider("java:comp/env/jdbc/dataSource"));
                 bindTransactionFactoryType(JdbcTransactionFactory.class);
                 addMapperClasses(MapperHelper.pkg());
             }
