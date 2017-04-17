@@ -7,6 +7,10 @@
     z-index: 1;
 }
 
+.custom-tooltip .tooltip-content .text-content {
+    padding-right: 5px;
+}
+
 .custom-tooltip {
     position: absolute;
     left: 33.33%;

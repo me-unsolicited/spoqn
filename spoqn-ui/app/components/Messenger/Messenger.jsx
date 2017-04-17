@@ -17,7 +17,11 @@ export class Messenger extends React.Component {
             messages: [],
             isPolling: false
         };
-        this._getMessages().done(function () {
+        this._getMessages().done(function (response) {
+            context.setState({
+                messages: response
+            });
+
             context._pollMessages();
             context.constructor._focusLatestMessage();
         });
@@ -49,12 +53,12 @@ export class Messenger extends React.Component {
 
         deferred.promise().done(function (response) {
             if (context.state.isPolling && response.length > context.state.messages.length) {
+                context.setState({
+                    messages: response
+                });
+
                 context.refs.tooltip.show();
             }
-
-            context.setState({
-                messages: response
-            });
         });
 
         return deferred.promise();
@@ -122,7 +126,8 @@ export class Messenger extends React.Component {
         }
     }
 
-    _clearMessage() {
+    _clearMessage(e) {
+        e.preventDefault();
         this.state.newMessage = '';
         document.querySelector('.messenger-author .user-input').value = '';
     }
@@ -143,8 +148,8 @@ export class Messenger extends React.Component {
                     <button className="send-button btn btn-primary btn-sm inline-block" type="submit">
                         <i className="fa fa-telegram fa-2x" aria-hidden="true"> </i>
                     </button>
-                    <button className="clear-button btn btn-default btn-sm inline-block">
-                        <i className="fa fa-times-circle fa-2x" aria-hidden="true" onClick={this._clearMessage.bind(this)}> </i>
+                    <button className="clear-button btn btn-default btn-sm inline-block" type="button" onClick={this._clearMessage.bind(this)}>
+                        <i className="fa fa-times-circle fa-2x" aria-hidden="true"> </i>
                     </button>
                 </form>
             </div>

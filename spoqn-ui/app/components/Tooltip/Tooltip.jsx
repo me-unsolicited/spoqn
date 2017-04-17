@@ -31,7 +31,8 @@ export class Tooltip extends React.Component {
         return (
             <div className={this.state.show ? 'custom-tooltip show' : 'custom-tooltip'} onClick={this._handleHide.bind(this)}>
                 <div className="tooltip-content">
-                    {this.props.content}
+                    <span className="text-content">{this.props.content}</span>
+                    <i className="fa fa-arrow-circle-down" aria-hidden="true"> </i>
                 </div>
             </div>
         );
