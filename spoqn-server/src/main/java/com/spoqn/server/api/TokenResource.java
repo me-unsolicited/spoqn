@@ -20,7 +20,7 @@ import javax.ws.rs.core.SecurityContext;
 import com.spoqn.server.api.exception.ErrorCode;
 import com.spoqn.server.core.Logins;
 import com.spoqn.server.core.exceptions.AuthenticationException;
-import com.spoqn.server.data.entities.TokenMap;
+import com.spoqn.server.data.TokenMap;
 
 import lombok.Data;
 import lombok.ToString;

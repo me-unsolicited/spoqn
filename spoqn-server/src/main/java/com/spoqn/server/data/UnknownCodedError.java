@@ -1,4 +1,4 @@
-package com.spoqn.server.data.entities;
+package com.spoqn.server.data;
 
 import java.util.UUID;
 

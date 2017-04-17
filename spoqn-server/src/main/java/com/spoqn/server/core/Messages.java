@@ -11,8 +11,8 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.spoqn.server.data.MessageMapper;
-import com.spoqn.server.data.entities.Message;
+import com.spoqn.server.data.Message;
+import com.spoqn.server.data.mappers.MessageMapper;
 
 @Singleton
 public class Messages {

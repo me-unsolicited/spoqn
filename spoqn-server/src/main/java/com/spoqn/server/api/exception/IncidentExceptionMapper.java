@@ -6,8 +6,8 @@ import java.util.UUID;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import com.spoqn.server.data.entities.CodedError;
-import com.spoqn.server.data.entities.UnknownCodedError;
+import com.spoqn.server.data.CodedError;
+import com.spoqn.server.data.UnknownCodedError;
 
 import lombok.extern.slf4j.Slf4j;
 

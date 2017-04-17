@@ -6,7 +6,7 @@ import java.util.Map;
 import javax.inject.Singleton;
 
 import com.spoqn.server.core.exceptions.ExistingLoginException;
-import com.spoqn.server.data.entities.User;
+import com.spoqn.server.data.User;
 
 @Singleton
 public class Users {

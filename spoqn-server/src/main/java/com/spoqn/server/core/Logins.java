@@ -22,7 +22,7 @@ import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
 import com.spoqn.server.core.exceptions.InadequatePasswordException;
 import com.spoqn.server.core.exceptions.SpoqnException;
-import com.spoqn.server.data.entities.TokenMap;
+import com.spoqn.server.data.TokenMap;
 
 import lombok.NonNull;
 

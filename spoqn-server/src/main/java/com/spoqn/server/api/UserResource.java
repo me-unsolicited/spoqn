@@ -13,7 +13,7 @@ import com.spoqn.server.core.Logins;
 import com.spoqn.server.core.Users;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
 import com.spoqn.server.core.exceptions.InadequatePasswordException;
-import com.spoqn.server.data.entities.User;
+import com.spoqn.server.data.User;
 
 import lombok.Synchronized;
 

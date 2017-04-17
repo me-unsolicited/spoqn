@@ -15,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import com.spoqn.server.core.Messages;
-import com.spoqn.server.data.entities.Message;
+import com.spoqn.server.data.Message;
 
 @Path("/messages")
 public class MessageResource {
