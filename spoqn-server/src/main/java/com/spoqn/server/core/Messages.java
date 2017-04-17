@@ -11,12 +11,14 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.spoqn.server.data.MessageMapper;
 import com.spoqn.server.data.entities.Message;
 
 @Singleton
 public class Messages {
 
     @Inject private Users users;
+    @Inject private MessageMapper mapper;
 
     private HashMap<UUID, Message> messages = new LinkedHashMap<>();
     {
@@ -57,6 +59,6 @@ public class Messages {
     }
 
     public Message read(UUID id) {
-        return messages.get(id);
+        return mapper.findOne(id.toString());
     }
 }

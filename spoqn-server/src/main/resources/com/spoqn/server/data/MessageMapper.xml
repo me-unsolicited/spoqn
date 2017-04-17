@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spoqn.server.data.MessageMapper">
+  <resultMap id="message" type="com.spoqn.server.data.entities.Message">
+    <id     property="id"           column="message_id"         typeHandler="com.spoqn.server.data.handlers.UUIDHandler" />
+    <result property="text"         column="message_text" />
+    <result property="timestamp"    column="message_timestamp"  typeHandler="com.spoqn.server.data.handlers.InstantHandler" />
+    <result property="user"         column="user_name" />
+    <result property="displayName"  column="user_display" />
+  </resultMap>
+
+  <select id="findOne">
+    SELECT
+      message_id
+    , message_text
+    , message_timestamp
+    , user_name
+    , user_display
+    FROM message
+    INNER JOIN user ON message.user_id = user.user_id
+    WHERE message_id = #{id}
+  </select>
+</mapper>
