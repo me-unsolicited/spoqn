@@ -18,7 +18,7 @@ import com.spoqn.server.data.User;
 import lombok.Synchronized;
 
 @Path("/users")
-public class UserResource {
+public class UserApi {
 
     private static boolean initialized = false;
 
@@ -31,7 +31,7 @@ public class UserResource {
     }
 
     @Synchronized
-    private static void initOnce(UserResource api) {
+    private static void initOnce(UserApi api) {
 
         // create some development users; temporary obviously
 

@@ -26,14 +26,14 @@ import lombok.Data;
 import lombok.ToString;
 
 @Path("/token")
-public class TokenResource {
+public class TokenApi {
 
     private static final String AUTH_PREFIX = "Basic ";
     private static final String AUTH_SEPARATOR = ":";
     private static final String CHALLENGE = "Basic";
 
     // temporary hack to force init of dev users
-    @SuppressWarnings("unused") @Inject private UserResource users;
+    @SuppressWarnings("unused") @Inject private UserApi users;
 
     @Inject private Logins logins;
     @Context private SecurityContext sc;

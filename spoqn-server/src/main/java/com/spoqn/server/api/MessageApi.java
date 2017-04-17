@@ -18,7 +18,7 @@ import com.spoqn.server.core.Messages;
 import com.spoqn.server.data.Message;
 
 @Path("/messages")
-public class MessageResource {
+public class MessageApi {
 
     @Inject private Messages messages;
     @Context private SecurityContext sc;
