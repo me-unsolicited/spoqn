@@ -1,30 +1,35 @@
 import React from 'react';
-import {Message} from 'Components/Messenger/Message';
+
 import $ from 'VendorJS/jQuery.min';
-import ReactDOM from 'react-dom';
-import css from './Messenger.css';
+
+import {Message} from 'Components/Messenger/Message';
+import {Tooltip} from 'Components/Tooltip/Tooltip'
+
+import {css} from './Messenger.css';
 
 export class Messenger extends React.Component {
     constructor(props) {
         super(props);
+        let context = this;
 
         this.state = {
             newMessage: '',
-            messages: []
+            messages: [],
+            isPolling: false
         };
-        this._getMessages();
+        this._getMessages().done(function () {
+            context._pollMessages();
+            context.constructor._focusLatestMessage();
+        });
     }
 
-    componentDidUpdate() {
-        this.focusLatestMessage();
-        document.querySelector('.messenger-author .user-input').value = '';
-    }
-
-    focusLatestMessage() {
+    static _focusLatestMessage() {
         let element;
 
         element = document.querySelector('.message-list').lastChild;
-        element.scrollIntoView();
+        element.scrollIntoView({
+            behavior: "smooth"
+        });
     }
 
     _getMessages() {
@@ -43,15 +48,19 @@ export class Messenger extends React.Component {
         });
 
         deferred.promise().done(function (response) {
+            if (context.state.isPolling && response.length > context.state.messages.length) {
+                context.refs.tooltip.show();
+            }
+
             context.setState({
                 messages: response
             });
-            //ReactDOM.render(<Message messages={context.state.messages}/>, document.getElementById('messenger-view'));
-            context.focusLatestMessage();
         });
+
+        return deferred.promise();
     }
 
-    sendMessage() {
+    _sendMessage() {
         let deferred = $.Deferred(),
             context = this;
 
@@ -78,27 +87,66 @@ export class Messenger extends React.Component {
             context.setState({
                 messages: messageList
             });
+
+            document.querySelector('.messenger-author .user-input').value = '';
+            context.constructor._focusLatestMessage();
         });
+
+        return deferred.promise();
     }
 
-    handleNewMessage(e) {
+    _pollMessages() {
+        let context = this;
+
+        context.setState({
+            isPolling: true
+        });
+
+        window.setInterval(function () {
+            context._getMessages();
+        }, 5000);
+    }
+
+    _handleNewMessage(e) {
         this.state.newMessage = e.target.value;
+    }
+
+    _handleSubmit(e) {
+        e.preventDefault();
+        this._sendMessage();
+    }
+
+    _handleScroll() {
+        if (this.refs.tooltip.state.show) {
+            this.refs.tooltip.hide();
+        }
+    }
+
+    _clearMessage() {
+        this.state.newMessage = '';
+        document.querySelector('.messenger-author .user-input').value = '';
     }
 
     render() {
         return (
-            <div>
-                <div className="messenger-view" id="messenger-view">
+            <div className="messenger-component">
+                <div className="messenger-view" id="messenger-view" onScroll={this._handleScroll.bind(this)}>
                     <Message messages={this.state.messages}/>
                 </div>
-                <div className="messenger-author">
-                    <input placeholder="Type Message... Get involved!" type="text"
-                           className="user-input form-control inline-block"
-                           onChange={this.handleNewMessage.bind(this)}/>
-                    <button className="send-button btn btn-primary btn-sm inline-block"
-                            onClick={this.sendMessage.bind(this)}>Send
+                <Tooltip content={'New Message'} ref="tooltip"
+                         callback={this.constructor._focusLatestMessage.bind(this)}/>
+                <form className="messenger-author" onSubmit={this._handleSubmit.bind(this)}>
+                    <textarea placeholder="Type Message... Get involved!" type="text"
+                           className="user-input form-control inline-block" rows="4" cols="50"
+                              onChange={this._handleNewMessage.bind(this)}>
+                    </textarea>
+                    <button className="send-button btn btn-primary btn-sm inline-block" type="submit">
+                        <i className="fa fa-telegram fa-2x" aria-hidden="true"> </i>
                     </button>
-                </div>
+                    <button className="clear-button btn btn-default btn-sm inline-block">
+                        <i className="fa fa-times-circle fa-2x" aria-hidden="true" onClick={this._clearMessage.bind(this)}> </i>
+                    </button>
+                </form>
             </div>
         );
     }
