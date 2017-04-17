@@ -40,6 +40,6 @@ public class MessageResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Message post(Message message) {
-        return messages.create(sc.getUserPrincipal(), message);
+        return messages.create(sc.getUserPrincipal().getName(), message);
     }
 }

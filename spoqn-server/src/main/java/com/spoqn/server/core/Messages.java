@@ -1,6 +1,5 @@
 package com.spoqn.server.core;
 
-import java.security.Principal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,9 +39,7 @@ public class Messages {
                 .build();
     }
 
-    public Message create(Principal principal, Message message) {
-
-        String username = principal.getName();
+    public Message create(String username, Message message) {
 
         message = message.toBuilder()
                 .id(UUID.randomUUID())
