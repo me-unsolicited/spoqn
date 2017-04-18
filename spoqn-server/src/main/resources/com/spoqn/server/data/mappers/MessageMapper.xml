@@ -34,7 +34,7 @@
 
   <select id="findOne" resultMap="message">
     <include refid="selectAll" />
-    WHERE message_id = #{id}
+    WHERE message_id = #{id, typeHandler=com.spoqn.server.data.handlers.UUIDHandler}
   </select>
 
   <select id="findAll" resultMap="message">
