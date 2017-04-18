@@ -16,8 +16,8 @@ public class Messages {
     @Inject private MessageMapper mapper;
 
     public Message create(String username, Message message) {
-        UUID id = mapper.create(message.toBuilder().user(username).build());
-        return mapper.findOne(id);
+        mapper.create(message.toBuilder().user(username).build());
+        return mapper.findOne(message.getId());
     }
 
     public List<Message> read() {

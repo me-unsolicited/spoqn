@@ -13,5 +13,5 @@ public interface MessageMapper {
 
     List<Message> findAll();
 
-    UUID create(Message message);
+    boolean create(Message message);
 }
