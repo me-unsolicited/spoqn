@@ -7,8 +7,10 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedTypes;
 import org.apache.ibatis.type.TypeHandler;
 
+@MappedTypes(UUID.class)
 public class UUIDHandler implements TypeHandler<UUID> {
 
     @Override

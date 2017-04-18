@@ -8,8 +8,10 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedTypes;
 import org.apache.ibatis.type.TypeHandler;
 
+@MappedTypes(Instant.class)
 public class InstantHandler implements TypeHandler<Instant> {
 
     @Override

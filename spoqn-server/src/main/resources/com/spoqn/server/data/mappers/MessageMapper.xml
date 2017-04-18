@@ -5,19 +5,19 @@
 <mapper namespace="com.spoqn.server.data.mappers.MessageMapper">
 
   <parameterMap id="message" type="com.spoqn.server.data.Message">
-    <parameter property="id" typeHandler="com.spoqn.server.data.handlers.UUIDHandler" />
+    <parameter property="id" />
     <parameter property="text" />
-    <parameter property="timestamp" typeHandler="com.spoqn.server.data.handlers.InstantHandler" />
+    <parameter property="timestamp" />
     <parameter property="user" />
   </parameterMap>
 
   <resultMap id="message" type="com.spoqn.server.data.Message">
     <constructor>
       <arg column="text" javaType="String" />
-      <arg column="message_id" javaType="java.util.UUID" typeHandler="com.spoqn.server.data.handlers.UUIDHandler" />
+      <arg column="message_id" javaType="java.util.UUID" />
       <arg column="user_name" javaType="String" />
       <arg column="user_display" javaType="String" />
-      <arg column="created" javaType="java.time.Instant" typeHandler="com.spoqn.server.data.handlers.InstantHandler" />
+      <arg column="created" javaType="java.time.Instant" />
     </constructor>
   </resultMap>
 
@@ -34,7 +34,7 @@
 
   <select id="findOne" resultMap="message">
     <include refid="selectAll" />
-    WHERE message_id = #{id, typeHandler=com.spoqn.server.data.handlers.UUIDHandler}
+    WHERE message_id = #{id}
   </select>
 
   <select id="findAll" resultMap="message">
