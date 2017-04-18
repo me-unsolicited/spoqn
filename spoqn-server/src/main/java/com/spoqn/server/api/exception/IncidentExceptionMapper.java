@@ -1,6 +1,7 @@
 package com.spoqn.server.api.exception;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.UUID;
 
 import javax.ws.rs.core.Response;
@@ -24,7 +25,7 @@ public abstract class IncidentExceptionMapper<E extends Throwable> implements Ex
         log.error(MessageFormat.format(MSG_PATTERN, incident), exception);
 
         // return the incident ID as part of an unknown error response
-        CodedError error = new UnknownCodedError(incident);
-        return Response.serverError().entity(error).build();
+        CodedError error = new UnknownCodedError(incident, exception.getMessage());
+        return Response.serverError().entity(Collections.singleton(error)).build();
     }
 }
