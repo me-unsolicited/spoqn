@@ -4,36 +4,36 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spoqn.server.data.mappers.MessageMapper">
   <resultMap id="message" type="com.spoqn.server.data.Message">
-    <id     property="id"           column="message_id"         typeHandler="com.spoqn.server.data.handlers.UUIDHandler" />
-    <result property="text"         column="message_text" />
-    <result property="timestamp"    column="message_timestamp"  typeHandler="com.spoqn.server.data.handlers.InstantHandler" />
+    <id     property="id"           column="message_id"   typeHandler="com.spoqn.server.data.handlers.UUIDHandler" />
+    <result property="text"         column="text" />
+    <result property="timestamp"    column="created"      typeHandler="com.spoqn.server.data.handlers.InstantHandler" />
     <result property="user"         column="user_name" />
     <result property="displayName"  column="user_display" />
   </resultMap>
 
   <sql id="selectAll">
     SELECT
-      message_id
-    , message_text
-    , message_timestamp
-    , user_name
-    , user_display
+      message.message_id
+    , message.text
+    , message.created
+    , user.user_name
+    , user.user_display
     FROM message
-    INNER JOIN user ON message.user_id = user.user_id
+    INNER JOIN user ON message.user_name = user.user_name
   </sql>
 
-  <select id="findOne">
+  <select id="findOne" resultMap="message">
     <include refid="selectAll" />
     WHERE message_id = #{id}
   </select>
 
-  <select id="findAll">
+  <select id="findAll" resultMap="message">
     <include refid="selectAll" />
   </select>
 
   <insert id="create" useGeneratedKeys="true" keyProperty="id">
     INSERT message SET
-      message_text = ${text}
-      user_id = (SELECT user_id FROM user WHERE username = ${user})
+      text = #{text}
+    , user_name = #{user}
   </insert>
 </mapper>
