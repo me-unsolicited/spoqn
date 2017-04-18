@@ -7,10 +7,13 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.mybatis.guice.transactional.Transactional;
+
 import com.spoqn.server.data.Message;
 import com.spoqn.server.data.mappers.MessageMapper;
 
 @Singleton
+@Transactional
 public class Messages {
 
     @Inject private MessageMapper mapper;
