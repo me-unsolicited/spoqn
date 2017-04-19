@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-  <Resource name="jdbc/dataSource" auth="Container" type="javax.sql.DataSource"
-    maxTotal="1" maxIdle="1" maxWaitMillis="10000" username="${RDS_USERNAME}"
-    password="${RDS_PASSWORD}" driverClassName="com.mysql.jdbc.Driver"
+  <Resource
+    name="jdbc/dataSource"
+    auth="Container"
+    type="javax.sql.DataSource"
+    maxTotal="1"
+    maxIdle="1"
+    maxWaitMillis="10000"
+    username="${RDS_USERNAME}"
+    password="${RDS_PASSWORD}"
+    driverClassName="com.mysql.jdbc.Driver"
     url="jdbc:mysql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}"
     defaultAutoCommit="false" />
 </Context>
