@@ -5,6 +5,15 @@
 <web-app>
   <display-name>spoqn</display-name>
 
+  <context-param>
+    <param-name>liquibase.changelog</param-name>
+    <param-value>com/spoqn/server/data/changelog/spoqn.changelog-master.xml</param-value>
+  </context-param>
+  <context-param>
+    <param-name>liquibase.datasource</param-name>
+    <param-value>java:comp/env/jdbc/dataSource</param-value>
+  </context-param>
+
   <filter>
     <filter-name>guiceFilter</filter-name>
     <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
@@ -14,6 +23,10 @@
     <filter-name>guiceFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+
+  <listener>
+    <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
+  </listener>
 
   <listener>
     <listener-class>com.spoqn.server.SpoqnContextListener</listener-class>
