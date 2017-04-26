@@ -4,6 +4,12 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spoqn.server.data.mappers.UserMapper">
 
+   <parameterMap id="user" type="com.spoqn.server.data.User">
+    <parameter property="loginId" />
+    <parameter property="displayName" />
+    <parameter property="created" />
+  </parameterMap>
+
   <resultMap id="user" type="com.spoqn.server.data.User">
     <constructor>
       <arg column="login_id" javaType="String" />
@@ -20,4 +26,12 @@
     FROM user
     WHERE login_id = #{loginId}
   </select>
+  
+  <insert id="create" parameterMap="user">
+    INSERT message SET
+      login_id = #{loginId}
+    , display_name = #{displayName}
+    , create_date = CURDATE()
+  </insert>
+  
 </mapper>
