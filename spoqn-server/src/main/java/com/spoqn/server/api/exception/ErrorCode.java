@@ -10,7 +10,8 @@ public enum ErrorCode {
     EXPECTED_BASIC_AUTH_BASE64("Expected username:password to be Base64 encoded"),
     MALFORMED_BASIC_AUTH("Expected username:password format"),
     USERNAME_TAKEN("Username is taken"),
-    PASSWORD_INADEQUATE("Password does not meet requirements");
+    PASSWORD_INADEQUATE("Password does not meet requirements"),
+    USER_NOT_FOUND("User cannot be found");
 
     public static final ErrorCode from(String code) {
 
