@@ -32,9 +32,6 @@ public class TokenApi {
     private static final String AUTH_SEPARATOR = ":";
     private static final String CHALLENGE = "Basic";
 
-    // temporary hack to force init of dev users
-    @SuppressWarnings("unused") @Inject private UserApi users;
-
     @Inject private Logins logins;
     @Context private SecurityContext sc;
 
