@@ -191,4 +191,11 @@ DEFAULT CHARACTER SET = latin1;
 
 --rollback drop table user_room;
 
-
+--changeset bmannon:9
+-- -----------------------------------------------------
+-- Alter `password`, drop salt and change pass_hash type
+-- -----------------------------------------------------
+ALTER TABLE `password` 
+DROP COLUMN `salt`,
+CHANGE COLUMN `pass_hash` `pass_hash` CHAR(60) NOT NULL ;
+--rollback ALTER TABLE `password` ADD COLUMN `salt` VARCHAR(8) NOT NULL, CHANGE COLUMN `pass_hash` VARCHAR(45) NOT NULL;

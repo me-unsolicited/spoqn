@@ -1,8 +1,10 @@
 package com.spoqn.server.api;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -28,5 +30,13 @@ public class UserApi {
             throw new NotFoundException(ErrorCode.USER_NOT_FOUND.name());
 
         return user;
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public User post(User user) {
+
+        return service.createUser(user);
     }
 }
