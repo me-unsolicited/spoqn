@@ -35,10 +35,15 @@
     , create_date = CURDATE();
   </insert>
 
+  <select id="getPassHash" resultType="String">
+    SELECT pass_hash
+    FROM password
+    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+  </select>
+
   <insert id="createPassword">
     INSERT password SET
       user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
     , pass_hash = #{hash};
   </insert>
-  
 </mapper>

@@ -77,8 +77,11 @@ public class UserService {
         if (username.isEmpty() || password.isEmpty())
             throw new AuthenticationException();
 
-        // TODO check hash
-        boolean authenticated = true;
+        String hash = mapper.getPassHash(username);
+        if (hash == null)
+            throw new AuthenticationException();
+
+        boolean authenticated = BCrypt.checkpw(password, hash);
         if (!authenticated)
             throw new AuthenticationException();
 
