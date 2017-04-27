@@ -15,7 +15,7 @@
     <constructor>
       <arg column="login_id" javaType="String" />
       <arg column="display_name" javaType="String" />
-      <arg column="create_date" javaType="java.time.Instant" />
+      <arg column="create_date" javaType="java.time.LocalDate" />
     </constructor>
   </resultMap>
 

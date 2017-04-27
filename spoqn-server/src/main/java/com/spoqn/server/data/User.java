@@ -1,6 +1,6 @@
 package com.spoqn.server.data;
 
-import java.time.Instant;
+import java.time.LocalDate;
 
 import com.spoqn.server.api.json.annotations.Hide;
 import com.spoqn.server.api.json.annotations.Reject;
@@ -18,11 +18,11 @@ public class User {
 
     String loginId;
     String displayName;
-    @Reject Instant created;
+    @Reject LocalDate created;
 
     @Hide String password;
 
-    public User(String loginId, String displayName, Instant created) {
+    public User(String loginId, String displayName, LocalDate created) {
         this(loginId, displayName, created, null);
     }
 }
