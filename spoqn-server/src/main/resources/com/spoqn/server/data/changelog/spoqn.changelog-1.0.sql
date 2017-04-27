@@ -198,3 +198,12 @@ ALTER TABLE `password`
 DROP COLUMN `salt`,
 CHANGE COLUMN `pass_hash` `pass_hash` CHAR(60) NOT NULL ;
 --rollback ALTER TABLE `password` ADD COLUMN `salt` VARCHAR(8) NOT NULL, CHANGE COLUMN `pass_hash` `pass_hash` VARCHAR(45) NOT NULL;
+
+--changeset bmannon:10
+-- -----------------------------------------------------
+-- Alter `token`, drop salt and change token_hash type
+-- -----------------------------------------------------
+ALTER TABLE `token` 
+DROP COLUMN `salt`,
+CHANGE COLUMN `token_hash` `token_hash` CHAR(60) NOT NULL ;
+--rollback ALTER TABLE `token` ADD COLUMN `salt` VARCHAR(8) NOT NULL, CHANGE COLUMN `token_hash` `token

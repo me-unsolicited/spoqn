@@ -32,7 +32,7 @@
     INSERT user SET
       login_id = #{loginId}
     , display_name = #{displayName}
-    , create_date = CURDATE();
+    , create_date = CURDATE()
   </insert>
 
   <select id="getPassHash" resultType="String">
@@ -44,6 +44,34 @@
   <insert id="createPassword">
     INSERT password SET
       user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
-    , pass_hash = #{hash};
+    , pass_hash = #{hash}
+  </insert>
+
+  <select id="getDeviceName" resultType="String">
+    SELECT device_name
+    FROM device
+    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+      AND device_hash = #{hash}
+  </select>
+
+  <insert id="createDevice">
+    INSERT device SET
+      user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    , device_name = #{deviceName}
+    , device_hash = #{hash}
+  </insert>
+
+  <select id="getTokenHash" resultType="String">
+    SELECT token_hash
+    FROM token
+    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+      AND device_id = (SELECT device_id FROM device WHERE device_name = #{deviceName})
+  </select>
+
+  <insert id="createToken">
+    INSERT token SET
+      user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    , device_id = (SELECT device_id FROM device WHERE device_name = #{deviceName})
+    , token_hash = #{hash}
   </insert>
 </mapper>

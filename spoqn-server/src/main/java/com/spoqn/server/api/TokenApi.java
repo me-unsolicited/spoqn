@@ -32,6 +32,9 @@ public class TokenApi {
     private static final String AUTH_SEPARATOR = ":";
     private static final String CHALLENGE = "Basic";
 
+    private static final String HEADER_DEVICE_NAME = "X-Device-Name";
+    private static final String HEADER_DEVICE_HASH = "X-Device-Hash";
+
     @Inject private UserService service;
     @Context private SecurityContext sc;
 
@@ -39,10 +42,11 @@ public class TokenApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public TokenMap login(@HeaderParam(HttpHeaders.AUTHORIZATION) String authHeader,
+            @HeaderParam(HEADER_DEVICE_NAME) String deviceName, @HeaderParam(HEADER_DEVICE_HASH) String deviceHash,
             @QueryParam("refresh") boolean refresh) {
 
         Auth auth = readAuth(authHeader);
-        return refresh ? refresh(auth) : authenticate(auth);
+        return refresh ? refresh(auth, deviceHash) : authenticate(auth, deviceName, deviceHash);
     }
 
     @DELETE
@@ -51,17 +55,17 @@ public class TokenApi {
         service.revoke(sc.getUserPrincipal().getName());
     }
 
-    private TokenMap refresh(Auth auth) {
+    private TokenMap refresh(Auth auth, String deviceHash) {
         try {
-            return service.refresh(auth.getUsername(), auth.getPassword());
+            return service.refresh(auth.getUsername(), auth.getPassword(), deviceHash);
         } catch (AuthenticationException e) {
             throw new NotAuthorizedException(ErrorCode.BAD_REFRESH_TOKEN.name(), e, CHALLENGE);
         }
     }
 
-    private TokenMap authenticate(Auth auth) {
+    private TokenMap authenticate(Auth auth, String deviceName, String deviceHash) {
         try {
-            return service.authenticate(auth.getUsername(), auth.getPassword());
+            return service.authenticate(auth.getUsername(), auth.getPassword(), deviceName, deviceHash);
         } catch (AuthenticationException e) {
             throw new NotAuthorizedException(ErrorCode.BAD_LOGIN.name(), e, CHALLENGE);
         }
