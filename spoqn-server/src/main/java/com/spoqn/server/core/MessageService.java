@@ -19,7 +19,13 @@ public class MessageService {
     @Inject private MessageMapper mapper;
 
     public Message create(String loginId, Message message) {
-        mapper.create(message.toBuilder().user(loginId).build());
+
+        message = message.toBuilder()
+                .id(UUID.randomUUID())
+                .user(loginId)
+                .build();
+
+        mapper.create(message);
         return mapper.findOne(message.getId());
     }
 

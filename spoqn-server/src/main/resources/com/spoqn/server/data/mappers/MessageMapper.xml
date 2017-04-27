@@ -14,7 +14,7 @@
   <resultMap id="message" type="com.spoqn.server.data.Message">
     <constructor>
       <arg column="content" javaType="String" />
-      <arg column="id" javaType="java.util.UUID" />
+      <arg column="message_uuid" javaType="java.util.UUID" />
       <arg column="login_id" javaType="String" />
       <arg column="display_name" javaType="String" />
       <arg column="create_date" javaType="java.time.Instant" />
@@ -43,9 +43,9 @@
 
   <insert id="create" parameterMap="message">
     INSERT message SET
-      message_uuid = UUID()
+      message_uuid = #{id}
     , content = #{text}
     , create_date = NOW()
-    , display_name = #{user}
+    , user_id = (SELECT user_id FROM user WHERE login_id = #{user})
   </insert>
 </mapper>
