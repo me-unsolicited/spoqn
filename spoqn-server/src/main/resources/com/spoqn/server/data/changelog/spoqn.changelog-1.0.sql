@@ -197,4 +197,4 @@ DEFAULT CHARACTER SET = latin1;
 ALTER TABLE `password` 
 DROP COLUMN `salt`,
 CHANGE COLUMN `pass_hash` `pass_hash` CHAR(60) NOT NULL ;
---rollback ALTER TABLE `password` ADD COLUMN `salt` VARCHAR(8) NOT NULL, CHANGE COLUMN `pass_hash` VARCHAR(45) NOT NULL;
+--rollback ALTER TABLE `password` ADD COLUMN `salt` VARCHAR(8) NOT NULL, CHANGE COLUMN `pass_hash` `pass_hash` VARCHAR(45) NOT NULL;
