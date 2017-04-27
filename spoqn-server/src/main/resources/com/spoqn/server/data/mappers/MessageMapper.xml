@@ -45,7 +45,7 @@
     INSERT message SET
       message_uuid = #{id}
     , content = #{text}
-    , create_date = NOW()
+    , create_date = UTC_TIMESTAMP()
     , user_id = (SELECT user_id FROM user WHERE login_id = #{user})
   </insert>
 </mapper>
