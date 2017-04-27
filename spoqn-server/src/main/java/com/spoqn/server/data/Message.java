@@ -15,10 +15,10 @@ import lombok.Value;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Message {
 
-    String text;
+    String content;
 
     @Reject UUID id;
-    @Reject String user;
+    @Reject String loginId;
     @Reject String displayName;
-    @Reject Instant timestamp;
+    @Reject Instant created;
 }

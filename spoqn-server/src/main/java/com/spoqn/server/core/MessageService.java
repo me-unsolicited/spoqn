@@ -22,7 +22,7 @@ public class MessageService {
 
         message = message.toBuilder()
                 .id(UUID.randomUUID())
-                .user(loginId)
+                .loginId(loginId)
                 .build();
 
         mapper.create(message);

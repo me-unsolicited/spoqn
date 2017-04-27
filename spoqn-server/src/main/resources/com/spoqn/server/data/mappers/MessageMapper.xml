@@ -6,9 +6,9 @@
 
   <parameterMap id="message" type="com.spoqn.server.data.Message">
     <parameter property="id" />
-    <parameter property="text" />
-    <parameter property="timestamp" />
-    <parameter property="user" />
+    <parameter property="content" />
+    <parameter property="created" />
+    <parameter property="loginId" />
   </parameterMap>
 
   <resultMap id="message" type="com.spoqn.server.data.Message">
@@ -44,8 +44,8 @@
   <insert id="create" parameterMap="message">
     INSERT message SET
       message_uuid = #{id}
-    , content = #{text}
+    , content = #{content}
     , create_date = UTC_TIMESTAMP()
-    , user_id = (SELECT user_id FROM user WHERE login_id = #{user})
+    , user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
   </insert>
 </mapper>
