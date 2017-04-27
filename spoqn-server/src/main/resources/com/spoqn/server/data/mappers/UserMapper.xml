@@ -8,6 +8,8 @@
     <parameter property="loginId" />
     <parameter property="displayName" />
     <parameter property="created" />
+    <parameter property="salt" />
+    <parameter property="password" />
   </parameterMap>
 
   <resultMap id="user" type="com.spoqn.server.data.User">
@@ -28,10 +30,13 @@
   </select>
   
   <insert id="create" parameterMap="user">
-    INSERT message SET
+    INSERT user SET
       login_id = #{loginId}
     , display_name = #{displayName}
-    , create_date = CURDATE()
+    , create_date = CURDATE();
+    INSERT password SET
+    hash = #{password}
+    , salt = #{salt}
   </insert>
   
 </mapper>
