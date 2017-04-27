@@ -1,6 +1,7 @@
 package com.spoqn.server.api;
 
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -12,6 +13,8 @@ import javax.ws.rs.core.MediaType;
 
 import com.spoqn.server.api.exception.ErrorCode;
 import com.spoqn.server.core.UserService;
+import com.spoqn.server.core.exceptions.ExistingLoginException;
+import com.spoqn.server.core.exceptions.InadequatePasswordException;
 import com.spoqn.server.data.User;
 
 @Path("/users")
@@ -37,6 +40,12 @@ public class UserApi {
     @Produces(MediaType.APPLICATION_JSON)
     public User post(User user) {
 
-        return service.createUser(user);
+        try {
+            return service.createUser(user);
+        } catch (ExistingLoginException e) {
+            throw new BadRequestException(ErrorCode.USERNAME_TAKEN.name());
+        } catch (InadequatePasswordException e) {
+            throw new BadRequestException(ErrorCode.PASSWORD_INADEQUATE.name());
+        }
     }
 }
