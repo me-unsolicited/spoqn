@@ -17,7 +17,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 import com.spoqn.server.api.exception.ErrorCode;
-import com.spoqn.server.core.Logins;
+import com.spoqn.server.core.UserService;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 
 import lombok.Data;
@@ -40,7 +40,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         EXCLUSIONS = Collections.unmodifiableSet(exclusions);
     }
 
-    @Inject private Logins logins;
+    @Inject private UserService service;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -57,7 +57,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         String token = auth.substring(AUTH_PREFIX.length());
         String username;
         try {
-            username = logins.resolveUsername(token);
+            username = service.resolveUsername(token);
         } catch (AuthenticationException e) {
             throw new NotAuthorizedException(ErrorCode.BAD_TOKEN.name(), CHALLENGE_BAD_AUTH);
         }

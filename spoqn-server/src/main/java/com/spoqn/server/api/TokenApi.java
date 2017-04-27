@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import com.spoqn.server.api.exception.ErrorCode;
-import com.spoqn.server.core.LoginService;
+import com.spoqn.server.core.UserService;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.data.TokenMap;
 
@@ -32,7 +32,7 @@ public class TokenApi {
     private static final String AUTH_SEPARATOR = ":";
     private static final String CHALLENGE = "Basic";
 
-    @Inject private LoginService logins;
+    @Inject private UserService service;
     @Context private SecurityContext sc;
 
     @GET
@@ -48,12 +48,12 @@ public class TokenApi {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     public void logout() {
-        logins.revoke(sc.getUserPrincipal().getName());
+        service.revoke(sc.getUserPrincipal().getName());
     }
 
     private TokenMap refresh(Auth auth) {
         try {
-            return logins.refresh(auth.getUsername(), auth.getPassword());
+            return service.refresh(auth.getUsername(), auth.getPassword());
         } catch (AuthenticationException e) {
             throw new NotAuthorizedException(ErrorCode.BAD_REFRESH_TOKEN.name(), e, CHALLENGE);
         }
@@ -61,7 +61,7 @@ public class TokenApi {
 
     private TokenMap authenticate(Auth auth) {
         try {
-            return logins.authenticate(auth.getUsername(), auth.getPassword());
+            return service.authenticate(auth.getUsername(), auth.getPassword());
         } catch (AuthenticationException e) {
             throw new NotAuthorizedException(ErrorCode.BAD_LOGIN.name(), e, CHALLENGE);
         }
