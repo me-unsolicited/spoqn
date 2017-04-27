@@ -131,7 +131,7 @@ public class UserService {
                 .build();
     }
 
-    public void revoke(@NonNull String username) {
+    public void revoke(@NonNull String loginId) {
 
         // TODO delete the refresh tokens from the database
         Set<String> tokens = new HashSet<>();
@@ -139,7 +139,7 @@ public class UserService {
             tokens.clear();
     }
 
-    private String issueAccessToken(String username) {
+    private String issueAccessToken(String loginId) {
 
         Map<String, Object> header = Collections.singletonMap("typ", "JWT");
 
@@ -150,7 +150,7 @@ public class UserService {
         return JWT.create()
                 .withHeader(header)
                 .withIssuer(issuer())
-                .withSubject(username)
+                .withSubject(loginId)
                 .withIssuedAt(issued)
                 .withNotBefore(issued)
                 .withExpiresAt(expiration)
@@ -172,11 +172,11 @@ public class UserService {
     /**
      * @param token
      *            Session token
-     * @return Username
+     * @return Login ID
      * @throws AuthenticationException
      *             If the token is invalid or expired
      */
-    public String resolveUsername(String token) {
+    public String resolveLoginId(String token) {
 
         try {
             return JWT.require(alg())

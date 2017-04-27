@@ -18,8 +18,8 @@ public class MessageService {
 
     @Inject private MessageMapper mapper;
 
-    public Message create(String username, Message message) {
-        mapper.create(message.toBuilder().user(username).build());
+    public Message create(String loginId, Message message) {
+        mapper.create(message.toBuilder().user(loginId).build());
         return mapper.findOne(message.getId());
     }
 
