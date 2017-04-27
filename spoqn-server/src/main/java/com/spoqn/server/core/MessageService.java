@@ -14,7 +14,7 @@ import com.spoqn.server.data.mappers.MessageMapper;
 
 @Singleton
 @Transactional
-public class Messages {
+public class MessageService {
 
     @Inject private MessageMapper mapper;
 

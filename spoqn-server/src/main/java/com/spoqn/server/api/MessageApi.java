@@ -14,13 +14,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
-import com.spoqn.server.core.Messages;
+import com.spoqn.server.core.MessageService;
 import com.spoqn.server.data.Message;
 
 @Path("/messages")
 public class MessageApi {
 
-    @Inject private Messages messages;
+    @Inject private MessageService messages;
     @Context private SecurityContext sc;
 
     @GET

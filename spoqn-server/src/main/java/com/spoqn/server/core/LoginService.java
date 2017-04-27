@@ -27,7 +27,7 @@ import com.spoqn.server.data.TokenMap;
 import lombok.NonNull;
 
 @Singleton
-public class Logins {
+public class LoginService {
 
     private static final int PASSWORD_MIN_LENGTH = 8;
 

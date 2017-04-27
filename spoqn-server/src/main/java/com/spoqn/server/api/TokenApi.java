@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import com.spoqn.server.api.exception.ErrorCode;
-import com.spoqn.server.core.Logins;
+import com.spoqn.server.core.LoginService;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.data.TokenMap;
 
@@ -32,7 +32,7 @@ public class TokenApi {
     private static final String AUTH_SEPARATOR = ":";
     private static final String CHALLENGE = "Basic";
 
-    @Inject private Logins logins;
+    @Inject private LoginService logins;
     @Context private SecurityContext sc;
 
     @GET
