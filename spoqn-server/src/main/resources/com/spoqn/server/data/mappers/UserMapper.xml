@@ -75,25 +75,37 @@
   <select id="getTokenHash" resultType="String">
     SELECT token_hash
     FROM token
-    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
-      AND device_id = (SELECT device_id FROM device WHERE device_name = #{deviceName})
+    WHERE device_id = (
+      SELECT device_id FROM device
+      WHERE device_name = #{deviceName}
+        AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    )
   </select>
 
   <insert id="createToken">
     INSERT token SET
-      user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
-    , device_id = (SELECT device_id FROM device WHERE device_name = #{deviceName})
+      device_id = (
+        SELECT device_id FROM device
+        WHERE device_name = #{deviceName}
+          AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+      )
     , token_hash = #{hash}
   </insert>
 
   <delete id="deleteToken">
     DELETE FROM token
-    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
-      AND device_id = (SELECT device_id FROM device WHERE device_name = #{deviceName})
+    WHERE device_id = (
+      SELECT device_id FROM device
+      WHERE device_name = #{deviceName}
+        AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    )
   </delete>
 
   <delete id="deleteTokens">
     DELETE FROM token
-    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    WHERE device_id = (
+      SELECT device_id FROM device
+      WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    )
   </delete>
 </mapper>

@@ -207,3 +207,21 @@ ALTER TABLE `token`
 DROP COLUMN `salt`,
 CHANGE COLUMN `token_hash` `token_hash` CHAR(60) NOT NULL ;
 --rollback ALTER TABLE `token` ADD COLUMN `salt` VARCHAR(8) NOT NULL, CHANGE COLUMN `token_hash` `token
+
+--changeset bmannon:11
+-- -----------------------------------------------------
+-- Alter `token`, drop foreign key to user
+-- -----------------------------------------------------
+ALTER TABLE `token` 
+DROP FOREIGN KEY `fk_token_user_id`;
+--rollback ALTER TABLE `token` ADD CONSTRAINT `fk_token_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--changeset bmannon:12
+-- -----------------------------------------------------
+-- Alter `token`, drop column user_id
+-- -----------------------------------------------------
+ALTER TABLE `token` 
+DROP COLUMN `user_id`,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (`device_id`);
+--rollback ALTER TABLE `token` ADD COLUMN `user_id` INT(11) NOT NULL FIRST, DROP PRIMARY KEY, ADD PRIMARY KEY (`user_id`, `device_id`)
