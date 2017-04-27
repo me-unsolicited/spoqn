@@ -38,26 +38,6 @@ public class LoginService {
     private Map<String, Set<String>> refreshTokens = new HashMap<>();
 
     /**
-     * @throws ExistingLoginException
-     *             If a user already exists with the provided username
-     */
-    public void create(@NonNull String username, @NonNull String password) {
-
-        if (logins.containsKey(username)) {
-            throw new ExistingLoginException();
-        }
-
-        validatePassword(password);
-
-        logins.put(username, password);
-    }
-
-    private void validatePassword(String password) {
-        if (password.length() < PASSWORD_MIN_LENGTH)
-            throw new InadequatePasswordException();
-    }
-
-    /**
      * @return Access and refresh tokens
      * @throws AuthenticationException
      *             If authentication has failed
