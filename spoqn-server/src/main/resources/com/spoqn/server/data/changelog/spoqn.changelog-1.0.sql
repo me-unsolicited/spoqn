@@ -1,8 +1,8 @@
 --liquibase formatted sql
 
+--changeset mvera:1
 -- -----------------------------------------------------
 -- Table `user`
---changeset mvera:1
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `user` (
   `user_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -17,9 +17,9 @@ DEFAULT CHARACTER SET = latin1;
 
 --rollback drop table user;
 
+--changeset mvera:2
 -- -----------------------------------------------------
 -- Table `device`
---changeset mvera:2
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `device` (
   `device_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -39,10 +39,9 @@ DEFAULT CHARACTER SET = latin1;
 
 --rollback drop table device;
 
-
+--changeset mvera:3
 -- -----------------------------------------------------
 -- Table `room`
---changeset mvera:3
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `room` (
   `room_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -59,9 +58,9 @@ DEFAULT CHARACTER SET = latin1;
 
 --rollback drop table room;
 
+--changeset mvera:4
 -- -----------------------------------------------------
 -- Table `message`
---changeset mvera:4
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `message` (
   `message_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -90,9 +89,9 @@ DEFAULT CHARACTER SET = latin1;
 
 --rollback drop table message;
 
+--changeset mvera:5
 -- -----------------------------------------------------
 -- Table `message_recipient`
---changeset mvera:5
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `message_recipient` (
   `mes_rec_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -118,9 +117,9 @@ DEFAULT CHARACTER SET = latin1;
 
 --rollback drop table message_recipient;
 
+--changeset mvera:6
 -- -----------------------------------------------------
 -- Table `password`
---changeset mvera:6
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `password` (
   `user_id` INT(11) NOT NULL,
@@ -137,9 +136,9 @@ DEFAULT CHARACTER SET = latin1;
 
 --rollback drop table password;
 
+--changeset mvera:7
 -- -----------------------------------------------------
 -- Table `token`
---changeset mvera:7
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `token` (
   `user_id` INT(11) NOT NULL,
@@ -163,9 +162,9 @@ DEFAULT CHARACTER SET = latin1;
 
 --rollback drop table token;
 
+--changeset mvera:8
 -- -----------------------------------------------------
 -- Table `user_room`
---changeset mvera:8
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `user_room` (
   `user_room_id` INT(11) NOT NULL AUTO_INCREMENT,
