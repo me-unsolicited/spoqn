@@ -51,8 +51,8 @@ public class TokenApi {
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public void logout() {
-        service.revoke(sc.getUserPrincipal().getName());
+    public void logout(@HeaderParam(HEADER_DEVICE_NAME) String deviceName) {
+        service.revoke(sc.getUserPrincipal().getName(), deviceName);
     }
 
     private TokenMap refresh(Auth auth, String deviceHash) {

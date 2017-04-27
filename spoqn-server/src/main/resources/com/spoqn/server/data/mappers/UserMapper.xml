@@ -61,6 +61,17 @@
     , device_hash = #{hash}
   </insert>
 
+  <delete id="deleteDevice">
+    DELETE FROM device
+    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+      AND device_name = #{deviceName}
+  </delete>
+
+  <delete id="deleteDevices">
+    DELETE FROM device
+    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+  </delete>
+
   <select id="getTokenHash" resultType="String">
     SELECT token_hash
     FROM token
@@ -74,4 +85,15 @@
     , device_id = (SELECT device_id FROM device WHERE device_name = #{deviceName})
     , token_hash = #{hash}
   </insert>
+
+  <delete id="deleteToken">
+    DELETE FROM token
+    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+      AND device_id = (SELECT device_id FROM device WHERE device_name = #{deviceName})
+  </delete>
+
+  <delete id="deleteTokens">
+    DELETE FROM token
+    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+  </delete>
 </mapper>

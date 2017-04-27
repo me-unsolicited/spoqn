@@ -6,9 +6,7 @@ import java.time.Instant;
 import java.time.temporal.TemporalAmount;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -133,10 +131,14 @@ public class UserService {
 
     public void revoke(@NonNull String loginId) {
 
-        // TODO delete the refresh tokens from the database
-        Set<String> tokens = new HashSet<>();
-        if (tokens != null)
-            tokens.clear();
+        mapper.deleteTokens(loginId);
+        mapper.deleteDevices(loginId);
+    }
+
+    public void revoke(@NonNull String loginId, @NonNull String deviceName) {
+
+        mapper.deleteToken(loginId, deviceName);
+        mapper.deleteDevice(loginId, deviceName);
     }
 
     private String issueAccessToken(String loginId) {
