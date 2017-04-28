@@ -12,6 +12,8 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
+import com.spoqn.server.api.providers.RequestPrincipalProvider;
+import com.spoqn.server.core.PrincipalProvider;
 import com.spoqn.server.data.handlers.HandlerHelper;
 import com.spoqn.server.data.mappers.MapperHelper;
 import com.squarespace.jersey2.guice.JerseyGuiceModule;
@@ -34,6 +36,9 @@ public class SpoqnContextListener extends GuiceServletContextListener {
                 bindTransactionFactoryType(JdbcTransactionFactory.class);
                 addMapperClasses(MapperHelper.pkg());
                 addTypeHandlerClasses(HandlerHelper.pkg());
+
+                // provides the principal (current user) to the service layer
+                bind(PrincipalProvider.class).to(RequestPrincipalProvider.class);
             }
         });
 

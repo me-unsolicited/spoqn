@@ -15,12 +15,13 @@ import com.spoqn.server.data.access.MessageDao;
 @Transactional
 public class MessageService {
 
+    @Inject private SpoqnContext context;
     @Inject private MessageDao dao;
 
-    public Message create(String loginId, Message message) {
+    public Message create(Message message) {
 
         message = message.toBuilder()
-                .loginId(loginId)
+                .loginId(context.getLoginId())
                 .build();
 
         return dao.create(message);
