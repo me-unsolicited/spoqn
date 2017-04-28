@@ -92,6 +92,15 @@
     , token_hash = #{hash}
   </insert>
 
+  <update id="updateToken">
+    UPDATE token SET token_hash = #{hash}
+    WHERE device_id = (
+      SELECT device_id FROM device
+      WHERE device_name = #{deviceName}
+        AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    )
+  </update>
+
   <delete id="deleteToken">
     DELETE FROM token
     WHERE device_id = (

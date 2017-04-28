@@ -165,8 +165,12 @@ public class UserService {
         String token = UUID.randomUUID().toString();
         String hash = BCrypt.hashpw(token, BCrypt.gensalt());
 
-        // put the salted hash in the database
-        mapper.createToken(loginId, deviceName, hash);
+        // put the salted hash in the database; update if already exists
+        boolean alreadyExists = mapper.getTokenHash(loginId, deviceName) != null;
+        if (alreadyExists)
+            mapper.updateToken(loginId, deviceName, hash);
+        else
+            mapper.createToken(loginId, deviceName, hash);
 
         return token;
     }

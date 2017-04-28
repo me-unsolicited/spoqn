@@ -16,6 +16,7 @@ public interface UserMapper {
     void deleteDevices(@Param("loginId") String loginId);
     String getTokenHash(@Param("loginId") String loginId, @Param("deviceName") String deviceName);
     void createToken(@Param("loginId") String loginId, @Param("deviceName") String deviceName, @Param("hash") String hash);
+    void updateToken(@Param("loginId") String loginId, @Param("deviceName") String deviceName, @Param("hash") String hash);
     void deleteToken(@Param("loginId") String loginId, @Param("deviceName") String deviceName);
     void deleteTokens(@Param("loginId") String loginId);
 }
