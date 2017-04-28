@@ -206,7 +206,7 @@ CHANGE COLUMN `pass_hash` `pass_hash` CHAR(60) NOT NULL ;
 ALTER TABLE `token` 
 DROP COLUMN `salt`,
 CHANGE COLUMN `token_hash` `token_hash` CHAR(60) NOT NULL ;
---rollback ALTER TABLE `token` ADD COLUMN `salt` VARCHAR(8) NOT NULL, CHANGE COLUMN `token_hash` `token
+--rollback ALTER TABLE `token` ADD COLUMN `salt` VARCHAR(8) NOT NULL, CHANGE COLUMN `token_hash` `token_hash` VARCHAR(45) NOT NULL;
 
 --changeset bmannon:11
 -- -----------------------------------------------------
@@ -224,4 +224,46 @@ ALTER TABLE `token`
 DROP COLUMN `user_id`,
 DROP PRIMARY KEY,
 ADD PRIMARY KEY (`device_id`);
---rollback ALTER TABLE `token` ADD COLUMN `user_id` INT(11) NOT NULL FIRST, DROP PRIMARY KEY, ADD PRIMARY KEY (`user_id`, `device_id`)
+--rollback ALTER TABLE `token` ADD COLUMN `user_id` INT(11) NOT NULL FIRST, DROP PRIMARY KEY, ADD PRIMARY KEY (`user_id`, `device_id`);
+
+--changeset bmannon:13
+-- -----------------------------------------------------
+-- Alter `message`, replace content BLOB with content_id
+-- -----------------------------------------------------
+ALTER TABLE `message` 
+DROP COLUMN `content`,
+CHANGE COLUMN `create_date` `create_date` DATETIME NOT NULL AFTER `message_uuid`,
+ADD COLUMN `content_id` INT(11) NOT NULL AFTER `user_id`,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (`message_id`, `user_id`, `content_id`),
+ADD INDEX `fk_message_content1_idx` (`content_id` ASC);
+--rollback ALTER TABLE `message` DROP COLUMN `content_id`, ADD COLUMN `content` BLOB NOT NULL AFTER `user_id`, CHANGE COLUMN `create_date` `create_date` DATETIME NOT NULL AFTER `content`, DROP PRIMARY KEY, ADD PRIMARY KEY (`message_id`, `user_id`), DROP INDEX `fk_message_content1_idx`;
+
+--changeset bmannon:14
+-- -----------------------------------------------------
+-- Table `content`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `content` (
+  `content_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `content_uuid` VARCHAR(36) NOT NULL,
+  `mime_type` VARCHAR(255) NOT NULL,
+  `body` BLOB NOT NULL,
+  PRIMARY KEY (`content_id`),
+  UNIQUE INDEX `content_id_UNIQUE` (`content_id` ASC),
+  UNIQUE INDEX `content_uuid_UNIQUE` (`content_uuid` ASC))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+--rollback DROP TABLE IF EXISTS `content`;
+
+--changeset bmannon:15
+-- -----------------------------------------------------
+-- Alter `message`, add foreign key to content
+-- -----------------------------------------------------
+ALTER TABLE `message` 
+ADD CONSTRAINT `fk_message_content1`
+  FOREIGN KEY (`content_id`)
+  REFERENCES `content` (`content_id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+--rollback ALTER TABLE `message` DROP FOREIGN KEY `fk_message_content1`;

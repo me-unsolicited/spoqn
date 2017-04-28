@@ -13,5 +13,8 @@ public interface MessageMapper {
 
     List<Message> findAll();
 
-    boolean create(Message message);
+    void create(Message message);
+
+    void createContent(@Param("contentId") UUID contentId, @Param("mimeType") String mimeType,
+            @Param("body") byte[] body);
 }
