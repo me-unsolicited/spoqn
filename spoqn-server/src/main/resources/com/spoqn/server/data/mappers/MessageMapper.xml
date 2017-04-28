@@ -42,6 +42,7 @@
 
   <select id="findAll" resultMap="message">
     <include refid="selectAll" />
+    ORDER BY m.create_date
   </select>
 
   <insert id="create" parameterMap="message">
