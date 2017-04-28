@@ -1,7 +1,6 @@
 package com.spoqn.server.data.access;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.mybatis.guice.transactional.Transactional;
 import org.mybatis.guice.transactional.Transactional.TxType;
@@ -9,7 +8,6 @@ import org.mybatis.guice.transactional.Transactional.TxType;
 import com.spoqn.server.data.User;
 import com.spoqn.server.data.mappers.UserMapper;
 
-@Singleton
 @Transactional(value = TxType.MANDATORY)
 public class UserDao {
 

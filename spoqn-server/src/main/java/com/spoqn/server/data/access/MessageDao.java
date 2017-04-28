@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 
 import org.mybatis.guice.transactional.Transactional;
@@ -15,7 +14,6 @@ import org.mybatis.guice.transactional.Transactional.TxType;
 import com.spoqn.server.data.Message;
 import com.spoqn.server.data.mappers.MessageMapper;
 
-@Singleton
 @Transactional(value = TxType.MANDATORY)
 public class MessageDao {
 

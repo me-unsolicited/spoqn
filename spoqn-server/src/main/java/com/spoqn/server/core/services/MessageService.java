@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.mybatis.guice.transactional.Transactional;
 
@@ -12,7 +11,6 @@ import com.spoqn.server.core.SpoqnContext;
 import com.spoqn.server.data.Message;
 import com.spoqn.server.data.access.MessageDao;
 
-@Singleton
 @Transactional
 public class MessageService {
 

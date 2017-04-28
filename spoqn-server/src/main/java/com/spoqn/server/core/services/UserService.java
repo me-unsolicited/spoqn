@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.mybatis.guice.transactional.Transactional;
@@ -28,7 +27,6 @@ import com.spoqn.server.data.access.UserDao;
 
 import lombok.NonNull;
 
-@Singleton
 @Transactional
 public class UserService {
 
