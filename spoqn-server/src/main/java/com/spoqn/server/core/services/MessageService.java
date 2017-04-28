@@ -1,4 +1,4 @@
-package com.spoqn.server.core;
+package com.spoqn.server.core.services;
 
 import java.util.List;
 import java.util.UUID;
@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import org.mybatis.guice.transactional.Transactional;
 
+import com.spoqn.server.core.SpoqnContext;
 import com.spoqn.server.data.Message;
 import com.spoqn.server.data.access.MessageDao;
 

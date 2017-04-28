@@ -17,8 +17,8 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 import com.spoqn.server.api.exception.ErrorCode;
-import com.spoqn.server.core.UserService;
 import com.spoqn.server.core.exceptions.AuthenticationException;
+import com.spoqn.server.core.services.UserService;
 
 import lombok.Data;
 

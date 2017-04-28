@@ -12,7 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.spoqn.server.core.MessageService;
+import com.spoqn.server.core.services.MessageService;
 import com.spoqn.server.data.Message;
 
 @Path("/messages")

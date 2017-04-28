@@ -12,9 +12,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.spoqn.server.api.exception.ErrorCode;
-import com.spoqn.server.core.UserService;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
 import com.spoqn.server.core.exceptions.InadequatePasswordException;
+import com.spoqn.server.core.services.UserService;
 import com.spoqn.server.data.User;
 
 @Path("/users")

@@ -1,4 +1,4 @@
-package com.spoqn.server.core;
+package com.spoqn.server.core.services;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Duration;
