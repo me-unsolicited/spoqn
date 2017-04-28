@@ -24,7 +24,7 @@ import com.spoqn.server.core.exceptions.InadequatePasswordException;
 import com.spoqn.server.core.exceptions.SpoqnException;
 import com.spoqn.server.data.TokenMap;
 import com.spoqn.server.data.User;
-import com.spoqn.server.data.mappers.UserMapper;
+import com.spoqn.server.data.access.UserDao;
 
 import lombok.NonNull;
 
@@ -35,17 +35,17 @@ public class UserService {
     private static final int PASSWORD_MIN_LENGTH = 8;
     private static final TemporalAmount TOKEN_LIFETIME = Duration.ofMinutes(15L);
 
-    @Inject private UserMapper mapper;
+    @Inject private UserDao dao;
 
     public User getUser(String loginId) {
-        return mapper.get(loginId);
+        return dao.read(loginId);
     }
 
     public User createUser(User user) {
 
         // check for existing login ID
         String loginId = user.getLoginId();
-        if (mapper.get(loginId) != null)
+        if (dao.read(loginId) != null)
             throw new ExistingLoginException();
 
         // verify password requirements
@@ -56,12 +56,7 @@ public class UserService {
         // securely generate password hash
         String hash = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        // create the user and store their password hash
-        mapper.create(user);
-        mapper.createPassword(loginId, hash);
-
-        // return the updated user
-        return mapper.get(loginId);
+        return dao.create(user, hash);
     }
 
     /**
@@ -76,7 +71,7 @@ public class UserService {
             throw new AuthenticationException();
 
         // get the stored password hash
-        String hash = mapper.getPassHash(loginId);
+        String hash = dao.readPassHash(loginId);
         if (hash == null)
             throw new AuthenticationException();
 
@@ -85,12 +80,7 @@ public class UserService {
         if (!authenticated)
             throw new AuthenticationException();
 
-        // create the device if it doesn't already exist
-        String knownDeviceName = mapper.getDeviceName(loginId, deviceHash);
-        if (knownDeviceName == null) {
-            mapper.createDevice(loginId, deviceName, deviceHash);
-            knownDeviceName = deviceName;
-        }
+        String knownDeviceName = dao.createDevice(loginId, deviceName, deviceHash);
 
         return TokenMap.builder()
                 .access(issueAccessToken(loginId))
@@ -109,12 +99,12 @@ public class UserService {
             throw new AuthenticationException();
 
         // verify the device hash
-        String deviceName = mapper.getDeviceName(loginId, deviceHash);
+        String deviceName = dao.findDeviceName(loginId, deviceHash);
         if (deviceName == null)
             throw new AuthenticationException();
 
         // get the expected token hash for this user and device
-        String hash = mapper.getTokenHash(loginId, deviceName);
+        String hash = dao.findTokenHash(loginId, deviceName);
         if (hash == null)
             throw new AuthenticationException();
 
@@ -130,15 +120,11 @@ public class UserService {
     }
 
     public void revoke(@NonNull String loginId) {
-
-        mapper.deleteTokens(loginId);
-        mapper.deleteDevices(loginId);
+        dao.deleteTokens(loginId);
     }
 
     public void revoke(@NonNull String loginId, @NonNull String deviceName) {
-
-        mapper.deleteToken(loginId, deviceName);
-        mapper.deleteDevice(loginId, deviceName);
+        dao.deleteToken(loginId, deviceName);
     }
 
     private String issueAccessToken(String loginId) {
@@ -165,12 +151,7 @@ public class UserService {
         String token = UUID.randomUUID().toString();
         String hash = BCrypt.hashpw(token, BCrypt.gensalt());
 
-        // put the salted hash in the database; update if already exists
-        boolean alreadyExists = mapper.getTokenHash(loginId, deviceName) != null;
-        if (alreadyExists)
-            mapper.updateToken(loginId, deviceName, hash);
-        else
-            mapper.createToken(loginId, deviceName, hash);
+        dao.updateToken(loginId, deviceName, hash);
 
         return token;
     }
