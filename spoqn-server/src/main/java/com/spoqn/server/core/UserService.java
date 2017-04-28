@@ -38,14 +38,14 @@ public class UserService {
     @Inject private UserDao dao;
 
     public User getUser(String loginId) {
-        return dao.read(loginId);
+        return dao.find(loginId);
     }
 
     public User createUser(User user) {
 
         // check for existing login ID
         String loginId = user.getLoginId();
-        if (dao.read(loginId) != null)
+        if (dao.find(loginId) != null)
             throw new ExistingLoginException();
 
         // verify password requirements
@@ -71,7 +71,7 @@ public class UserService {
             throw new AuthenticationException();
 
         // get the stored password hash
-        String hash = dao.readPassHash(loginId);
+        String hash = dao.findPassHash(loginId);
         if (hash == null)
             throw new AuthenticationException();
 

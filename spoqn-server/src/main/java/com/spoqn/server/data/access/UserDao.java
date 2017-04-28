@@ -41,11 +41,11 @@ public class UserDao {
         return mapper.getDeviceName(loginId, deviceHash);
     }
 
-    public User read(String loginId) {
+    public User find(String loginId) {
         return mapper.get(loginId);
     }
 
-    public String readPassHash(String loginId) {
+    public String findPassHash(String loginId) {
         return mapper.getPassHash(loginId);
     }
 
