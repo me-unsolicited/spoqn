@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.time.Instant;
+import java.time.LocalDate;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.BadRequestException;
@@ -42,6 +44,8 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         gson = new GsonBuilder()
                 .addSerializationExclusionStrategy(new HideStrategy())
                 .addDeserializationExclusionStrategy(new RejectStrategy())
+                .registerTypeAdapter(Instant.class, new InstantAdapter())
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                 .create();
     }
 
