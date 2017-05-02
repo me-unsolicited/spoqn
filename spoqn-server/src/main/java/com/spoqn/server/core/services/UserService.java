@@ -17,6 +17,7 @@ import org.mybatis.guice.transactional.Transactional;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.spoqn.server.core.SpoqnContext;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
 import com.spoqn.server.core.exceptions.InadequatePasswordException;
@@ -33,6 +34,7 @@ public class UserService {
     private static final int PASSWORD_MIN_LENGTH = 8;
     private static final TemporalAmount TOKEN_LIFETIME = Duration.ofMinutes(15L);
 
+    @Inject private SpoqnContext context;
     @Inject private UserDao dao;
 
     public User getUser(String loginId) {
@@ -117,12 +119,12 @@ public class UserService {
                 .build();
     }
 
-    public void revoke(@NonNull String loginId) {
-        dao.deleteTokens(loginId);
+    public void revoke() {
+        dao.deleteTokens(context.getLoginId());
     }
 
-    public void revoke(@NonNull String loginId, @NonNull String deviceName) {
-        dao.deleteToken(loginId, deviceName);
+    public void revoke(@NonNull String deviceName) {
+        dao.deleteToken(context.getLoginId(), deviceName);
     }
 
     private String issueAccessToken(String loginId) {

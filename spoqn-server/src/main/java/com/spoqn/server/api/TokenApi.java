@@ -12,10 +12,8 @@ import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import com.spoqn.server.api.exception.ErrorCode;
 import com.spoqn.server.core.exceptions.AuthenticationException;
@@ -36,7 +34,6 @@ public class TokenApi {
     private static final String HEADER_DEVICE_HASH = "X-Device-Hash";
 
     @Inject private UserService service;
-    @Context private SecurityContext sc;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -52,7 +49,7 @@ public class TokenApi {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     public void logout(@HeaderParam(HEADER_DEVICE_NAME) String deviceName) {
-        service.revoke(sc.getUserPrincipal().getName(), deviceName);
+        service.revoke(deviceName);
     }
 
     private TokenMap refresh(Auth auth, String deviceHash) {

@@ -3,6 +3,8 @@ package com.spoqn.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.core.SecurityContext;
+
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.JndiDataSourceProvider;
@@ -10,6 +12,7 @@ import org.mybatis.guice.datasource.builtin.JndiDataSourceProvider;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.multibindings.OptionalBinder;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 import com.spoqn.server.api.providers.RequestPrincipalProvider;
