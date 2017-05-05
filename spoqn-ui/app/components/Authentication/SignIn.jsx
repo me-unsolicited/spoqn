@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'VendorJS/jQuery.min';
-import {Messenger} from "Components/Messenger/Messenger";
-import css from './Authentication.css';
+
+import {Home} from 'Components/Home/Home';
+import {AuthCss} from './Authentication.css';
 
 export class SignIn extends React.Component {
     constructor(props) {
@@ -42,7 +43,7 @@ export class SignIn extends React.Component {
         });
 
         deferred.promise().done(function (response) {
-            ReactDOM.render(<Messenger token={response}/>, document.getElementById('app'));
+            ReactDOM.render(<Home token={response}/>, document.getElementById('app'));
         });
     }
 
