@@ -51,11 +51,11 @@ export class SignIn extends React.Component {
         return (
             <div className="sign-in-form">
                 <div className="form-group">
-                    <label htmlFor="email">Email:</label>
+                    <label for="email">Email:</label>
                     <input type="email" className="form-control" id="email" placeholder="Enter email" onChange={this.handleEmail.bind(this)}/>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="pwd">Password:</label>
+                    <label for="pwd">Password:</label>
                     <input type="password" className="form-control" id="pwd" placeholder="Enter password" onChange={this.handlePassword.bind(this)}/>
                 </div>
                 <div className="checkbox">

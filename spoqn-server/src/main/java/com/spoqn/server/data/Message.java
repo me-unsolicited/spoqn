@@ -1,8 +1,9 @@
-package com.spoqn.server.data.entities;
+package com.spoqn.server.data;
 
 import java.time.Instant;
 import java.util.UUID;
 
+import com.spoqn.server.api.json.annotations.Hide;
 import com.spoqn.server.api.json.annotations.Reject;
 
 import lombok.AccessLevel;
@@ -15,10 +16,11 @@ import lombok.Value;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Message {
 
-    String text;
+    String content;
 
     @Reject UUID id;
-    @Reject String user;
+    @Reject String loginId;
+    @Hide @Reject UUID contentId;
     @Reject String displayName;
-    @Reject Instant timestamp;
+    @Reject Instant created;
 }

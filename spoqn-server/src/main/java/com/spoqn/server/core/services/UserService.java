@@ -1,4 +1,4 @@
-package com.spoqn.server.core;
+package com.spoqn.server.core.services;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Duration;
@@ -6,55 +6,57 @@ import java.time.Instant;
 import java.time.temporal.TemporalAmount;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
-import javax.inject.Singleton;
+import javax.inject.Inject;
+
+import org.mindrot.jbcrypt.BCrypt;
+import org.mybatis.guice.transactional.Transactional;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.spoqn.server.core.SpoqnContext;
 import com.spoqn.server.core.exceptions.AuthenticationException;
 import com.spoqn.server.core.exceptions.ExistingLoginException;
 import com.spoqn.server.core.exceptions.InadequatePasswordException;
 import com.spoqn.server.core.exceptions.SpoqnException;
-import com.spoqn.server.data.entities.TokenMap;
+import com.spoqn.server.data.TokenMap;
+import com.spoqn.server.data.User;
+import com.spoqn.server.data.access.UserDao;
 
 import lombok.NonNull;
 
-@Singleton
-public class Logins {
+@Transactional
+public class UserService {
 
     private static final int PASSWORD_MIN_LENGTH = 8;
-
     private static final TemporalAmount TOKEN_LIFETIME = Duration.ofMinutes(15L);
 
-    // don't look at this
-    private Map<String, String> logins = new HashMap<>();
-    private Map<String, Set<String>> refreshTokens = new HashMap<>();
+    @Inject private SpoqnContext context;
+    @Inject private UserDao dao;
 
-    /**
-     * @throws ExistingLoginException
-     *             If a user already exists with the provided username
-     */
-    public void create(@NonNull String username, @NonNull String password) {
-
-        if (logins.containsKey(username)) {
-            throw new ExistingLoginException();
-        }
-
-        validatePassword(password);
-
-        logins.put(username, password);
+    public User getUser(String loginId) {
+        return dao.find(loginId);
     }
 
-    private void validatePassword(String password) {
+    public User createUser(User user) {
+
+        // check for existing login ID
+        String loginId = user.getLoginId();
+        if (dao.find(loginId) != null)
+            throw new ExistingLoginException();
+
+        // verify password requirements
+        String password = user.getPassword();
         if (password.length() < PASSWORD_MIN_LENGTH)
             throw new InadequatePasswordException();
+
+        // securely generate password hash
+        String hash = BCrypt.hashpw(password, BCrypt.gensalt());
+
+        return dao.create(user, hash);
     }
 
     /**
@@ -62,18 +64,27 @@ public class Logins {
      * @throws AuthenticationException
      *             If authentication has failed
      */
-    public TokenMap authenticate(@NonNull String username, @NonNull String password) {
+    public TokenMap authenticate(@NonNull String loginId, @NonNull String password, @NonNull String deviceName,
+            @NonNull String deviceHash) {
 
-        if (username.isEmpty() || password.isEmpty())
+        if (loginId.isEmpty() || password.isEmpty())
             throw new AuthenticationException();
 
-        boolean authenticated = Objects.equals(password, logins.get(username));
+        // get the stored password hash
+        String hash = dao.findPassHash(loginId);
+        if (hash == null)
+            throw new AuthenticationException();
+
+        // verify the plaintext password against the salted hash
+        boolean authenticated = BCrypt.checkpw(password, hash);
         if (!authenticated)
             throw new AuthenticationException();
 
+        String knownDeviceName = dao.createDevice(loginId, deviceName, deviceHash);
+
         return TokenMap.builder()
-                .access(issueAccessToken(username))
-                .refresh(issueRefreshToken(username))
+                .access(issueAccessToken(loginId))
+                .refresh(issueRefreshToken(loginId, knownDeviceName))
                 .build();
     }
 
@@ -82,29 +93,41 @@ public class Logins {
      * @throws AuthenticationException
      *             If authentication has failed
      */
-    public TokenMap refresh(@NonNull String username, @NonNull String refresh) {
+    public TokenMap refresh(@NonNull String loginId, @NonNull String refresh, @NonNull String deviceHash) {
 
-        if (username.isEmpty())
+        if (loginId.isEmpty())
             throw new AuthenticationException();
 
-        Set<String> tokens = refreshTokens.get(username);
-        if (tokens == null || !tokens.contains(refresh))
+        // verify the device hash
+        String deviceName = dao.findDeviceName(loginId, deviceHash);
+        if (deviceName == null)
+            throw new AuthenticationException();
+
+        // get the expected token hash for this user and device
+        String hash = dao.findTokenHash(loginId, deviceName);
+        if (hash == null)
+            throw new AuthenticationException();
+
+        // verify the plaintext token against the salted hash
+        boolean authenticated = BCrypt.checkpw(refresh, hash);
+        if (!authenticated)
             throw new AuthenticationException();
 
         return TokenMap.builder()
-                .access(issueAccessToken(username))
+                .access(issueAccessToken(loginId))
                 .refresh(refresh)
                 .build();
     }
 
-    public void revoke(@NonNull String username) {
-
-        Set<String> tokens = refreshTokens.get(username);
-        if (tokens != null)
-            tokens.clear();
+    public void revoke() {
+        dao.deleteTokens(context.getLoginId());
     }
 
-    private String issueAccessToken(String username) {
+    public void revoke(@NonNull String deviceName) {
+        dao.deleteToken(context.getLoginId(), deviceName);
+    }
+
+    private String issueAccessToken(String loginId) {
 
         Map<String, Object> header = Collections.singletonMap("typ", "JWT");
 
@@ -115,25 +138,20 @@ public class Logins {
         return JWT.create()
                 .withHeader(header)
                 .withIssuer(issuer())
-                .withSubject(username)
+                .withSubject(loginId)
                 .withIssuedAt(issued)
                 .withNotBefore(issued)
                 .withExpiresAt(expiration)
                 .sign(alg());
     }
 
-    private String issueRefreshToken(String username) {
+    private String issueRefreshToken(String loginId, String deviceName) {
 
-        // not thread safe but... this is temporary until db so... :|
-
-        Set<String> tokens = refreshTokens.get(username);
-        if (tokens == null) {
-            tokens = new HashSet<>();
-            refreshTokens.put(username, tokens);
-        }
-
+        // securely generate a token and hash it
         String token = UUID.randomUUID().toString();
-        tokens.add(token);
+        String hash = BCrypt.hashpw(token, BCrypt.gensalt());
+
+        dao.updateToken(loginId, deviceName, hash);
 
         return token;
     }
@@ -141,11 +159,11 @@ public class Logins {
     /**
      * @param token
      *            Session token
-     * @return Username
+     * @return Login ID
      * @throws AuthenticationException
      *             If the token is invalid or expired
      */
-    public String resolveUsername(String token) {
+    public String resolveLoginId(String token) {
 
         try {
             return JWT.require(alg())

@@ -64,9 +64,48 @@
       <artifactId>guava</artifactId>
       <version>21.0</version>
     </dependency>
+  	<dependency>
+      	<groupId>mysql</groupId>
+      	<artifactId>mysql-connector-java</artifactId>
+      	<version>5.1.41</version>
+  	</dependency>
+    <dependency>
+      <groupId>org.mybatis</groupId>
+      <artifactId>mybatis</artifactId>
+      <version>3.4.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mybatis</groupId>
+      <artifactId>mybatis-guice</artifactId>
+      <version>3.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.liquibase</groupId>
+      <artifactId>liquibase-core</artifactId>
+      <version>3.5.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mindrot</groupId>
+      <artifactId>jbcrypt</artifactId>
+      <version>0.4</version>
+    </dependency>
   </dependencies>
   <build>
     <finalName>spoqn-server</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.liquibase</groupId>
+        <artifactId>liquibase-maven-plugin</artifactId>
+        <version>3.5.3</version>
+        <configuration>
+          <changeLogFile>src/main/resources/com/spoqn/server/data/changelog/spoqn.changelog-master.xml</changeLogFile>
+          <driver>com.mysql.jdbc.Driver</driver>
+          <username>${env.RDS_USERNAME}</username>
+          <password>${env.RDS_PASSWORD}</password>
+          <url>jdbc:mysql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}</url>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>

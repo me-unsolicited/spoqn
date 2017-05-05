@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spoqn.server.data.mappers.MessageMapper">
+
+  <parameterMap id="message" type="com.spoqn.server.data.Message">
+    <parameter property="id" />
+    <parameter property="content" />
+    <parameter property="created" />
+    <parameter property="loginId" />
+  </parameterMap>
+
+  <resultMap id="message" type="com.spoqn.server.data.Message">
+    <constructor>
+      <arg column="body" javaType="String" />
+      <arg column="message_uuid" javaType="java.util.UUID" />
+      <arg column="login_id" javaType="String" />
+      <arg column="content_uuid" javaType="java.util.UUID" />
+      <arg column="display_name" javaType="String" />
+      <arg column="create_date" javaType="java.time.Instant" />
+    </constructor>
+  </resultMap>
+
+  <sql id="selectAll">
+    SELECT
+      m.message_uuid
+    , c.content_uuid
+    , c.body
+    , m.create_date
+    , u.login_id
+    , u.display_name
+    FROM message m
+    INNER JOIN content c ON m.content_id = c.content_id
+    INNER JOIN user u ON m.user_id = u.user_id
+  </sql>
+
+  <select id="findOne" resultMap="message">
+    <include refid="selectAll" />
+    WHERE message_uuid = #{id}
+  </select>
+
+  <select id="findAll" resultMap="message">
+    <include refid="selectAll" />
+    ORDER BY m.create_date
+  </select>
+
+  <insert id="create" parameterMap="message">
+    INSERT message SET
+      message_uuid = #{id}
+    , user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    , content_id = (SELECT content_id FROM content WHERE content_uuid = #{contentId})
+    , create_date = UTC_TIMESTAMP()
+  </insert>
+
+  <insert id="createContent" parameterMap="message">
+    INSERT content SET
+      content_uuid = #{contentId}
+    , mime_type = #{mimeType}
+    , body = #{body}
+  </insert>
+</mapper>

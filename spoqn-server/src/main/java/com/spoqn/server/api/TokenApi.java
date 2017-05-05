@@ -12,59 +12,57 @@ import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import com.spoqn.server.api.exception.ErrorCode;
-import com.spoqn.server.core.Logins;
 import com.spoqn.server.core.exceptions.AuthenticationException;
-import com.spoqn.server.data.entities.TokenMap;
+import com.spoqn.server.core.services.UserService;
+import com.spoqn.server.data.TokenMap;
 
 import lombok.Data;
 import lombok.ToString;
 
 @Path("/token")
-public class TokenResource {
+public class TokenApi {
 
     private static final String AUTH_PREFIX = "Basic ";
     private static final String AUTH_SEPARATOR = ":";
     private static final String CHALLENGE = "Basic";
 
-    // temporary hack to force init of dev users
-    @SuppressWarnings("unused") @Inject private UserResource users;
+    private static final String HEADER_DEVICE_NAME = "X-Device-Name";
+    private static final String HEADER_DEVICE_HASH = "X-Device-Hash";
 
-    @Inject private Logins logins;
-    @Context private SecurityContext sc;
+    @Inject private UserService service;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public TokenMap login(@HeaderParam(HttpHeaders.AUTHORIZATION) String authHeader,
+            @HeaderParam(HEADER_DEVICE_NAME) String deviceName, @HeaderParam(HEADER_DEVICE_HASH) String deviceHash,
             @QueryParam("refresh") boolean refresh) {
 
         Auth auth = readAuth(authHeader);
-        return refresh ? refresh(auth) : authenticate(auth);
+        return refresh ? refresh(auth, deviceHash) : authenticate(auth, deviceName, deviceHash);
     }
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public void logout() {
-        logins.revoke(sc.getUserPrincipal().getName());
+    public void logout(@HeaderParam(HEADER_DEVICE_NAME) String deviceName) {
+        service.revoke(deviceName);
     }
 
-    private TokenMap refresh(Auth auth) {
+    private TokenMap refresh(Auth auth, String deviceHash) {
         try {
-            return logins.refresh(auth.getUsername(), auth.getPassword());
+            return service.refresh(auth.getUsername(), auth.getPassword(), deviceHash);
         } catch (AuthenticationException e) {
             throw new NotAuthorizedException(ErrorCode.BAD_REFRESH_TOKEN.name(), e, CHALLENGE);
         }
     }
 
-    private TokenMap authenticate(Auth auth) {
+    private TokenMap authenticate(Auth auth, String deviceName, String deviceHash) {
         try {
-            return logins.authenticate(auth.getUsername(), auth.getPassword());
+            return service.authenticate(auth.getUsername(), auth.getPassword(), deviceName, deviceHash);
         } catch (AuthenticationException e) {
             throw new NotAuthorizedException(ErrorCode.BAD_LOGIN.name(), e, CHALLENGE);
         }

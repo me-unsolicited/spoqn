@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import com.spoqn.server.data.entities.CodedError;
+import com.spoqn.server.data.CodedError;
 
 @Provider
 public class ApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {

@@ -3,11 +3,22 @@ package com.spoqn.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.core.SecurityContext;
+
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.mybatis.guice.MyBatisModule;
+import org.mybatis.guice.datasource.builtin.JndiDataSourceProvider;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.multibindings.OptionalBinder;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
+import com.spoqn.server.api.providers.RequestPrincipalProvider;
+import com.spoqn.server.core.PrincipalProvider;
+import com.spoqn.server.data.handlers.HandlerHelper;
+import com.spoqn.server.data.mappers.MapperHelper;
 import com.squarespace.jersey2.guice.JerseyGuiceModule;
 import com.squarespace.jersey2.guice.JerseyGuiceUtils;
 
@@ -19,6 +30,20 @@ public class SpoqnContextListener extends GuiceServletContextListener {
         List<Module> modules = new ArrayList<>();
         modules.add(new JerseyGuiceModule("__HK2_Generated_0"));
         modules.add(new ServletModule());
+        modules.add(new MyBatisModule() {
+
+            @Override
+            protected void initialize() {
+                environmentId("development");
+                bindDataSourceProvider(new JndiDataSourceProvider("java:comp/env/jdbc/dataSource"));
+                bindTransactionFactoryType(JdbcTransactionFactory.class);
+                addMapperClasses(MapperHelper.pkg());
+                addTypeHandlerClasses(HandlerHelper.pkg());
+
+                // provides the principal (current user) to the service layer
+                bind(PrincipalProvider.class).to(RequestPrincipalProvider.class);
+            }
+        });
 
         Injector injector = Guice.createInjector(modules);
         JerseyGuiceUtils.install(injector);

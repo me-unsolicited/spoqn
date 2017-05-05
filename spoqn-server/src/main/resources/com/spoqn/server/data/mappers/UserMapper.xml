@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spoqn.server.data.mappers.UserMapper">
+
+   <parameterMap id="user" type="com.spoqn.server.data.User">
+    <parameter property="loginId" />
+    <parameter property="displayName" />
+    <parameter property="created" />
+    <parameter property="password" />
+  </parameterMap>
+
+  <resultMap id="user" type="com.spoqn.server.data.User">
+    <constructor>
+      <arg column="login_id" javaType="String" />
+      <arg column="display_name" javaType="String" />
+      <arg column="create_date" javaType="java.time.LocalDate" />
+    </constructor>
+  </resultMap>
+
+  <select id="get" resultMap="user">
+    SELECT
+      login_id
+    , display_name
+    , create_date
+    FROM user
+    WHERE login_id = #{loginId}
+  </select>
+  
+  <insert id="create" parameterMap="user">
+    INSERT user SET
+      login_id = #{loginId}
+    , display_name = #{displayName}
+    , create_date = CURDATE()
+  </insert>
+
+  <select id="getPassHash" resultType="String">
+    SELECT pass_hash
+    FROM password
+    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+  </select>
+
+  <insert id="createPassword">
+    INSERT password SET
+      user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    , pass_hash = #{hash}
+  </insert>
+
+  <select id="getDeviceName" resultType="String">
+    SELECT device_name
+    FROM device
+    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+      AND device_hash = #{hash}
+  </select>
+
+  <insert id="createDevice">
+    INSERT device SET
+      user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    , device_name = #{deviceName}
+    , device_hash = #{hash}
+  </insert>
+
+  <delete id="deleteDevice">
+    DELETE FROM device
+    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+      AND device_name = #{deviceName}
+  </delete>
+
+  <delete id="deleteDevices">
+    DELETE FROM device
+    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+  </delete>
+
+  <select id="getTokenHash" resultType="String">
+    SELECT token_hash
+    FROM token
+    WHERE device_id = (
+      SELECT device_id FROM device
+      WHERE device_name = #{deviceName}
+        AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    )
+  </select>
+
+  <insert id="createToken">
+    INSERT token SET
+      device_id = (
+        SELECT device_id FROM device
+        WHERE device_name = #{deviceName}
+          AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+      )
+    , token_hash = #{hash}
+  </insert>
+
+  <update id="updateToken">
+    UPDATE token SET token_hash = #{hash}
+    WHERE device_id = (
+      SELECT device_id FROM device
+      WHERE device_name = #{deviceName}
+        AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    )
+  </update>
+
+  <delete id="deleteToken">
+    DELETE FROM token
+    WHERE device_id = (
+      SELECT device_id FROM device
+      WHERE device_name = #{deviceName}
+        AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    )
+  </delete>
+
+  <delete id="deleteTokens">
+    DELETE FROM token
+    WHERE device_id = (
+      SELECT device_id FROM device
+      WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    )
+  </delete>
+</mapper>

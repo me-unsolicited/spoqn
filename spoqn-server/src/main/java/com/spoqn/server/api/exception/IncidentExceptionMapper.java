@@ -1,13 +1,14 @@
 package com.spoqn.server.api.exception;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.UUID;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import com.spoqn.server.data.entities.CodedError;
-import com.spoqn.server.data.entities.UnknownCodedError;
+import com.spoqn.server.data.CodedError;
+import com.spoqn.server.data.UnknownCodedError;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +25,7 @@ public abstract class IncidentExceptionMapper<E extends Throwable> implements Ex
         log.error(MessageFormat.format(MSG_PATTERN, incident), exception);
 
         // return the incident ID as part of an unknown error response
-        CodedError error = new UnknownCodedError(incident);
-        return Response.serverError().entity(error).build();
+        CodedError error = new UnknownCodedError(incident, exception.getMessage());
+        return Response.serverError().entity(Collections.singleton(error)).build();
     }
 }
