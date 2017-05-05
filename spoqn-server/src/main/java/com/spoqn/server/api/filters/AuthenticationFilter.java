@@ -22,6 +22,9 @@ import com.spoqn.server.core.services.UserService;
 
 import lombok.Data;
 
+/**
+ * Authenticates users using access tokens.
+ */
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
@@ -45,15 +48,18 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
 
+        // skip requests that don't require authentication (e.g. new users)
         String method = requestContext.getMethod();
         String path = requestContext.getUriInfo().getPath();
         if (EXCLUSIONS.contains(new RequestPattern(method, path)))
             return;
 
+        // read the Authorization: Basic header
         String auth = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
         if (auth == null || !auth.startsWith(AUTH_PREFIX))
             throw new NotAuthorizedException(ErrorCode.NO_AUTH_HEADER.name(), CHALLENGE_NO_AUTH);
 
+        // read the token, and use it to get the user's login ID
         String token = auth.substring(AUTH_PREFIX.length());
         String loginId;
         try {
@@ -62,6 +68,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             throw new NotAuthorizedException(ErrorCode.BAD_TOKEN.name(), CHALLENGE_BAD_AUTH);
         }
 
+        // the security context provides the user's login ID to other components
         SecurityContext baseSc = requestContext.getSecurityContext();
         SecurityContext sc = new UserSecurityContext(baseSc, loginId);
         requestContext.setSecurityContext(sc);
@@ -73,6 +80,9 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         private final String path;
     }
 
+    /**
+     * Provides the spoqn login ID via the {@link Principal} interface.
+     */
     private static class UserSecurityContext implements SecurityContext {
 
         private final SecurityContext base;
