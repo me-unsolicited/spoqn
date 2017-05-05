@@ -1,0 +1,46 @@
+.home-component.view-body {
+    height: 100vh;
+    width: 100vw;
+}
+
+.home-component.view-body .view-north {
+    height: 55vh;
+    width: auto;
+    border-bottom: 5px #CCC solid;
+}
+
+.home-component.view-body .view-north .topic-view {
+    width: 60%;
+    height: 100%;
+    border-right: 5px #CCC solid;
+    vertical-align: top;
+}
+
+.home-component.view-body .view-north .content-viewer {
+    width: 100%;
+    height: 100%;
+}
+
+.home-component.view-body .view-north .rooms-view {
+    width: 40%;
+    height: 100%;
+    background: indianred;
+}
+
+.home-component.view-body .view-south {
+    height: 38vh;
+    width: auto;
+}
+
+.home-component.view-body .view-south .message-view {
+    height: 100%;
+    width: auto;
+}
+
+.home-component .about .logo {
+    text-align: center;
+}
+
+.home-component .about .logo .logo-text {
+    color: #cccccc;
+}
