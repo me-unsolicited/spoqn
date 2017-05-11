@@ -18,25 +18,25 @@ import com.spoqn.server.data.Message;
 @Path("/messages")
 public class MessageApi {
 
-    @Inject private MessageService messages;
+    @Inject private MessageService service;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Message> get() {
-        return messages.read();
+        return service.read();
     }
 
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Message get(@PathParam("id") UUID id) {
-        return messages.read(id);
+        return service.read(id);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Message post(Message message) {
-        return messages.create(message);
+        return service.create(message);
     }
 }
