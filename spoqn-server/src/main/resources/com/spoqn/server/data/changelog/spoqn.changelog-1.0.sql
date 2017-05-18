@@ -1,6 +1,23 @@
 --liquibase formatted sql
 
---changeset mvera:1
+--changeset bmannon:1
+-- -----------------------------------------------------
+-- Table `content`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `content` (
+  `content_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `content_uuid` VARCHAR(36) NOT NULL,
+  `mime_type` VARCHAR(255) NOT NULL,
+  `body` BLOB NOT NULL,
+  PRIMARY KEY (`content_id`),
+  UNIQUE INDEX `content_id_UNIQUE` (`content_id` ASC),
+  UNIQUE INDEX `content_uuid_UNIQUE` (`content_uuid` ASC))
+ENGINE = InnoDB
+AUTO_INCREMENT = 10
+DEFAULT CHARACTER SET = latin1;
+--rollback DROP TABLE `content`;
+
+--changeset bmannon:2
 -- -----------------------------------------------------
 -- Table `user`
 -- -----------------------------------------------------
@@ -9,15 +26,22 @@ CREATE TABLE IF NOT EXISTS `user` (
   `login_id` VARCHAR(45) NOT NULL,
   `display_name` VARCHAR(100) NULL DEFAULT NULL,
   `create_date` DATE NOT NULL,
+  `profile_content_id` INT(11) NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE INDEX `login_id_UNIQUE` (`login_id` ASC),
-  UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC))
+  UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC),
+  INDEX `fk_profile_content_id_idx` (`profile_content_id` ASC),
+  CONSTRAINT `fk_user_profile_content_id`
+    FOREIGN KEY (`profile_content_id`)
+    REFERENCES `content` (`content_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
+AUTO_INCREMENT = 4
 DEFAULT CHARACTER SET = latin1;
+--rollback DROP TABLE `user`;
 
---rollback drop table user;
-
---changeset mvera:2
+--changeset bmannon:3
 -- -----------------------------------------------------
 -- Table `device`
 -- -----------------------------------------------------
@@ -35,11 +59,11 @@ CREATE TABLE IF NOT EXISTS `device` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
+AUTO_INCREMENT = 5
 DEFAULT CHARACTER SET = latin1;
+--rollback DROP TABLE `device`;
 
---rollback drop table device;
-
---changeset mvera:3
+--changeset bmannon:4
 -- -----------------------------------------------------
 -- Table `room`
 -- -----------------------------------------------------
@@ -47,223 +71,230 @@ CREATE TABLE IF NOT EXISTS `room` (
   `room_id` INT(11) NOT NULL AUTO_INCREMENT,
   `room_name` VARCHAR(45) NOT NULL,
   `create_date` DATE NOT NULL,
-  `is_active` TINYINT(4) NOT NULL,
-  `room_topic` VARCHAR(100) NULL,
-  `room_uuid` VARCHAR(36) NOT NULL,
   PRIMARY KEY (`room_id`),
   UNIQUE INDEX `room_id_UNIQUE` (`room_id` ASC),
-  UNIQUE INDEX `room_uuid_UNIQUE` (`room_uuid` ASC))
+  UNIQUE INDEX `room_name_UNIQUE` (`room_name` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
+--rollback DROP TABLE `room`;
 
---rollback drop table room;
+--changeset bmannon:5
+-- -----------------------------------------------------
+-- Table `topic`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `topic` (
+  `topic_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `topic_url` VARCHAR(2000) NOT NULL,
+  PRIMARY KEY (`topic_id`),
+  UNIQUE INDEX `topic_id_UNIQUE` (`topic_id` ASC),
+  UNIQUE INDEX `topic_url_UNIQUE` (`topic_url` ASC))
+ENGINE = InnoDB;
+--rollback DROP TABLE `topic`;
 
---changeset mvera:4
+--changeset bmannon:6
 -- -----------------------------------------------------
 -- Table `message`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `message` (
   `message_id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_id` INT(11) NOT NULL,
-  `content` BLOB NOT NULL,
-  `create_date` DATETIME NOT NULL,
   `room_id` INT(11) NULL DEFAULT NULL,
+  `topic_id` INT(11) NULL,
   `message_uuid` VARCHAR(36) NOT NULL,
+  `create_date` DATETIME NOT NULL,
   PRIMARY KEY (`message_id`, `user_id`),
   UNIQUE INDEX `message_id_UNIQUE` (`message_id` ASC),
-  INDEX `user_id_idx` (`user_id` ASC),
-  INDEX `room_id_idx` (`room_id` ASC),
   UNIQUE INDEX `message_uuid_UNIQUE` (`message_uuid` ASC),
-  CONSTRAINT `fk_mes_room_id`
+  INDEX `fk_user_id_idx` (`user_id` ASC),
+  INDEX `fk_room_id_idx` (`room_id` ASC),
+  INDEX `fk_topic_id_idx` (`topic_id` ASC),
+  CONSTRAINT `fk_message_room_id`
     FOREIGN KEY (`room_id`)
     REFERENCES `room` (`room_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_mes_user_id`
+  CONSTRAINT `fk_message_user_id`
     FOREIGN KEY (`user_id`)
     REFERENCES `user` (`user_id`)
     ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_message_topic_id`
+    FOREIGN KEY (`topic_id`)
+    REFERENCES `topic` (`topic_id`)
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
+AUTO_INCREMENT = 10
 DEFAULT CHARACTER SET = latin1;
+--rollback DROP TABLE `message`;
 
---rollback drop table message;
-
---changeset mvera:5
+--changeset bmannon:7
 -- -----------------------------------------------------
 -- Table `message_recipient`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `message_recipient` (
-  `mes_rec_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `recipient_id` INT(11) NULL DEFAULT NULL,
-  `message_id` INT(11) NULL DEFAULT NULL,
-  `is_read` TINYINT(4) NULL DEFAULT NULL,
-  PRIMARY KEY (`mes_rec_id`),
-  UNIQUE INDEX `mes_rec_id_UNIQUE` (`mes_rec_id` ASC),
-  INDEX `fk_recipient_id_idx` (`recipient_id` ASC),
+  `recipient_user_id` INT(11) NOT NULL,
+  `message_id` INT(11) NOT NULL,
+  `is_read` TINYINT(1) NULL DEFAULT NULL,
+  INDEX `fk_recipient_user_id_idx` (`recipient_user_id` ASC),
   INDEX `fk_message_id_idx` (`message_id` ASC),
-  CONSTRAINT `fk_message_id`
+  PRIMARY KEY (`recipient_user_id`, `message_id`),
+  CONSTRAINT `fk_message_recipient_message_id`
     FOREIGN KEY (`message_id`)
     REFERENCES `message` (`message_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_recipient_id`
-    FOREIGN KEY (`recipient_id`)
+  CONSTRAINT `fk_message_recipient_recipient_user_id`
+    FOREIGN KEY (`recipient_user_id`)
     REFERENCES `user` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
+--rollback DROP TABLE `message_recipient`;
 
---rollback drop table message_recipient;
-
---changeset mvera:6
+--changeset bmannon:8
 -- -----------------------------------------------------
 -- Table `password`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `password` (
   `user_id` INT(11) NOT NULL,
-  `pass_hash` VARCHAR(45) NOT NULL,
-  `salt` VARCHAR(8) NOT NULL,
+  `pass_hash` CHAR(60) NOT NULL,
   PRIMARY KEY (`user_id`),
-  CONSTRAINT `fk_pass_user_id`
+  CONSTRAINT `fk_password_user_id`
     FOREIGN KEY (`user_id`)
     REFERENCES `user` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
+--rollback DROP TABLE `password`;
 
---rollback drop table password;
-
---changeset mvera:7
+--changeset bmannon:9
 -- -----------------------------------------------------
 -- Table `token`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `token` (
-  `user_id` INT(11) NOT NULL,
   `device_id` INT(11) NOT NULL,
-  `token_hash` VARCHAR(64) NOT NULL,
-  `salt` VARCHAR(8) NOT NULL,
-  PRIMARY KEY (`user_id`, `device_id`),
-  INDEX `fk_token_device_id_idx` (`device_id` ASC),
+  `token_hash` CHAR(60) NOT NULL,
+  PRIMARY KEY (`device_id`),
+  INDEX `fk_device_id_idx` (`device_id` ASC),
   CONSTRAINT `fk_token_device_id`
     FOREIGN KEY (`device_id`)
     REFERENCES `device` (`device_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_token_user_id`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `user` (`user_id`)
-    ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
+--rollback DROP TABLE `token`;
 
---rollback drop table token;
-
---changeset mvera:8
+--changeset bmannon:10
 -- -----------------------------------------------------
 -- Table `user_room`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `user_room` (
-  `user_room_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `user_id` INT(11) NULL DEFAULT NULL,
-  `room_id` INT(11) NULL DEFAULT NULL,
-  `is_active` TINYINT(4) NULL DEFAULT NULL,
-  PRIMARY KEY (`user_room_id`),
-  UNIQUE INDEX `user_room_id_UNIQUE` (`user_room_id` ASC),
-  INDEX `user_id_idx` (`user_id` ASC),
-  INDEX `room_id_idx` (`room_id` ASC),
-  CONSTRAINT `fk_room_id`
+  `user_id` INT(11) NOT NULL,
+  `room_id` INT(11) NOT NULL,
+  `create_date` DATETIME NOT NULL,
+  `is_active` TINYINT(1) NOT NULL,
+  INDEX `fk_user_id_idx` (`user_id` ASC),
+  INDEX `fk_room_id_idx` (`room_id` ASC),
+  PRIMARY KEY (`user_id`, `room_id`),
+  CONSTRAINT `fk_user_room_room_id`
     FOREIGN KEY (`room_id`)
     REFERENCES `room` (`room_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_user_id`
+  CONSTRAINT `fk_user_room_user_id`
     FOREIGN KEY (`user_id`)
     REFERENCES `user` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
-
---rollback drop table user_room;
-
---changeset bmannon:9
--- -----------------------------------------------------
--- Alter `password`, drop salt and change pass_hash type
--- -----------------------------------------------------
-ALTER TABLE `password` 
-DROP COLUMN `salt`,
-CHANGE COLUMN `pass_hash` `pass_hash` CHAR(60) NOT NULL ;
---rollback ALTER TABLE `password` ADD COLUMN `salt` VARCHAR(8) NOT NULL, CHANGE COLUMN `pass_hash` `pass_hash` VARCHAR(45) NOT NULL;
-
---changeset bmannon:10
--- -----------------------------------------------------
--- Alter `token`, drop salt and change token_hash type
--- -----------------------------------------------------
-ALTER TABLE `token` 
-DROP COLUMN `salt`,
-CHANGE COLUMN `token_hash` `token_hash` CHAR(60) NOT NULL ;
---rollback ALTER TABLE `token` ADD COLUMN `salt` VARCHAR(8) NOT NULL, CHANGE COLUMN `token_hash` `token_hash` VARCHAR(45) NOT NULL;
+--rollback DROP TABLE `user_room`;
 
 --changeset bmannon:11
 -- -----------------------------------------------------
--- Alter `token`, drop foreign key to user
+-- Table `message_attachment`
 -- -----------------------------------------------------
-ALTER TABLE `token` 
-DROP FOREIGN KEY `fk_token_user_id`;
---rollback ALTER TABLE `token` ADD CONSTRAINT `fk_token_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+CREATE TABLE IF NOT EXISTS `message_attachment` (
+  `message_id` INT(11) NOT NULL,
+  `content_id` INT(11) NOT NULL,
+  PRIMARY KEY (`message_id`, `content_id`),
+  INDEX `fk_content_id_idx` (`content_id` ASC),
+  INDEX `fk_message_id_idx` (`message_id` ASC),
+  CONSTRAINT `fk_message_attachment_message_id`
+    FOREIGN KEY (`message_id`)
+    REFERENCES `message` (`message_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_message_attachment_content_id`
+    FOREIGN KEY (`content_id`)
+    REFERENCES `content` (`content_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+--rollback DROP TABLE `message_attachment`;
 
 --changeset bmannon:12
 -- -----------------------------------------------------
--- Alter `token`, drop column user_id
+-- Table `room_topic`
 -- -----------------------------------------------------
-ALTER TABLE `token` 
-DROP COLUMN `user_id`,
-DROP PRIMARY KEY,
-ADD PRIMARY KEY (`device_id`);
---rollback ALTER TABLE `token` ADD COLUMN `user_id` INT(11) NOT NULL FIRST, DROP PRIMARY KEY, ADD PRIMARY KEY (`user_id`, `device_id`);
+CREATE TABLE IF NOT EXISTS `room_topic` (
+  `room_id` INT(11) NOT NULL,
+  `topic_id` INT(11) NOT NULL,
+  `create_date` DATETIME NOT NULL,
+  PRIMARY KEY (`create_date`, `topic_id`, `room_id`),
+  INDEX `fk_topic_id_idx` (`topic_id` ASC),
+  INDEX `fk_room_id_idx` (`room_id` ASC),
+  CONSTRAINT `fk_room_topic_room_id`
+    FOREIGN KEY (`room_id`)
+    REFERENCES `room` (`room_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_room_topic_topic_id`
+    FOREIGN KEY (`topic_id`)
+    REFERENCES `topic` (`topic_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+--rollback DROP TABLE `room_topic`;
 
 --changeset bmannon:13
 -- -----------------------------------------------------
--- Alter `message`, replace content BLOB with content_id
+-- Table `tag`
 -- -----------------------------------------------------
-ALTER TABLE `message` 
-DROP COLUMN `content`,
-CHANGE COLUMN `create_date` `create_date` DATETIME NOT NULL AFTER `message_uuid`,
-ADD COLUMN `content_id` INT(11) NOT NULL AFTER `user_id`,
-DROP PRIMARY KEY,
-ADD PRIMARY KEY (`message_id`, `user_id`, `content_id`),
-ADD INDEX `fk_message_content1_idx` (`content_id` ASC);
---rollback ALTER TABLE `message` DROP COLUMN `content_id`, ADD COLUMN `content` BLOB NOT NULL AFTER `user_id`, CHANGE COLUMN `create_date` `create_date` DATETIME NOT NULL AFTER `content`, DROP PRIMARY KEY, ADD PRIMARY KEY (`message_id`, `user_id`), DROP INDEX `fk_message_content1_idx`;
+CREATE TABLE IF NOT EXISTS `tag` (
+  `tag_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `tag_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`tag_id`),
+  UNIQUE INDEX `tag_id_UNIQUE` (`tag_id` ASC),
+  UNIQUE INDEX `tag_name_UNIQUE` (`tag_name` ASC))
+ENGINE = InnoDB;
+--rollback DROP TABLE `tag`;
 
 --changeset bmannon:14
 -- -----------------------------------------------------
--- Table `content`
+-- Table `topic_tag`
 -- -----------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS `content` (
-  `content_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `content_uuid` VARCHAR(36) NOT NULL,
-  `mime_type` VARCHAR(255) NOT NULL,
-  `body` BLOB NOT NULL,
-  PRIMARY KEY (`content_id`),
-  UNIQUE INDEX `content_id_UNIQUE` (`content_id` ASC),
-  UNIQUE INDEX `content_uuid_UNIQUE` (`content_uuid` ASC))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = latin1;
---rollback DROP TABLE IF EXISTS `content`;
-
---changeset bmannon:15
--- -----------------------------------------------------
--- Alter `message`, add foreign key to content
--- -----------------------------------------------------
-ALTER TABLE `message` 
-ADD CONSTRAINT `fk_message_content1`
-  FOREIGN KEY (`content_id`)
-  REFERENCES `content` (`content_id`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION;
---rollback ALTER TABLE `message` DROP FOREIGN KEY `fk_message_content1`;
+CREATE TABLE IF NOT EXISTS `topic_tag` (
+  `topic_id` INT(11) NOT NULL,
+  `tag_id` INT(11) NOT NULL,
+  PRIMARY KEY (`topic_id`, `tag_id`),
+  INDEX `fk_tag_id_idx` (`tag_id` ASC),
+  INDEX `fk_topic_id_idx` (`topic_id` ASC),
+  CONSTRAINT `fk_topic_tag_topic_id`
+    FOREIGN KEY (`topic_id`)
+    REFERENCES `topic` (`topic_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_topic_tag_tag_id`
+    FOREIGN KEY (`tag_id`)
+    REFERENCES `tag` (`tag_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+--rollback DROP TABLE `topic_tag`;
