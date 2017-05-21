@@ -23,6 +23,7 @@ DEFAULT CHARACTER SET = latin1;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `user` (
   `user_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_uuid` VARCHAR(36) NULL,
   `login_id` VARCHAR(45) NOT NULL,
   `display_name` VARCHAR(100) NULL DEFAULT NULL,
   `create_date` DATE NOT NULL,
@@ -38,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 4
-DEFAULT CHARACTER SET = latin1;
+DEFAULT CHARACTER SET = latin1
 --rollback DROP TABLE `user`;
 
 --changeset bmannon:3
@@ -101,6 +102,7 @@ CREATE TABLE IF NOT EXISTS `message` (
   `room_id` INT(11) NULL DEFAULT NULL,
   `topic_id` INT(11) NULL,
   `message_uuid` VARCHAR(36) NOT NULL,
+  `message_text` VARCHAR(2000) NULL,
   `create_date` DATETIME NOT NULL,
   PRIMARY KEY (`message_id`, `user_id`),
   UNIQUE INDEX `message_id_UNIQUE` (`message_id` ASC),
@@ -125,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `message` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 10
-DEFAULT CHARACTER SET = latin1;
+DEFAULT CHARACTER SET = latin1
 --rollback DROP TABLE `message`;
 
 --changeset bmannon:7
