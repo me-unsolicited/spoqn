@@ -5,13 +5,14 @@ import java.util.UUID;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.spoqn.server.api.params.MessageParams;
 import com.spoqn.server.data.Message;
 
 public interface MessageMapper {
 
     Message findOne(@Param("id") UUID id);
 
-    List<Message> findAll();
+    List<Message> findBy(@Param("loginId") String loginId, @Param("params") MessageParams params);
 
     void create(Message message);
 

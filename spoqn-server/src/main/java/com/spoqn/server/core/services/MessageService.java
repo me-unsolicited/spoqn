@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.mybatis.guice.transactional.Transactional;
 
+import com.spoqn.server.api.params.MessageParams;
 import com.spoqn.server.core.SpoqnContext;
 import com.spoqn.server.data.Message;
 import com.spoqn.server.data.access.MessageDao;
@@ -26,8 +27,8 @@ public class MessageService {
         return dao.create(message);
     }
 
-    public List<Message> read() {
-        return dao.findAll();
+    public List<Message> read(MessageParams params) {
+        return dao.findBy(context.getLoginId(), params);
     }
 
     public Message read(UUID id) {

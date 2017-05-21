@@ -6,43 +6,77 @@
 
   <parameterMap id="message" type="com.spoqn.server.data.Message">
     <parameter property="id" />
-    <parameter property="content" />
     <parameter property="created" />
     <parameter property="loginId" />
   </parameterMap>
 
   <resultMap id="message" type="com.spoqn.server.data.Message">
     <constructor>
-      <arg column="body" javaType="String" />
-      <arg column="message_uuid" javaType="java.util.UUID" />
+      <idArg column="message_uuid" javaType="java.util.UUID" />
+      <arg column="message_text" javaType="String" />
+      <arg column="create_date" javaType="java.time.Instant" />
       <arg column="login_id" javaType="String" />
       <arg column="content_uuid" javaType="java.util.UUID" />
-      <arg column="display_name" javaType="String" />
-      <arg column="create_date" javaType="java.time.Instant" />
     </constructor>
   </resultMap>
 
   <sql id="selectAll">
     SELECT
       m.message_uuid
-    , c.content_uuid
-    , c.body
+    , m.message_text
     , m.create_date
     , u.login_id
-    , u.display_name
+    , c.content_uuid
     FROM message m
-    INNER JOIN content c ON m.content_id = c.content_id
     INNER JOIN user u ON m.user_id = u.user_id
+    LEFT JOIN message_attachment m_att ON m.message_id = m_att.message_id
+    LEFT JOIN content c ON m_att.content_id = c.content_id
+    LEFT JOIN room r ON m.room_id = r.room_id
+    LEFT JOIN message_recipient m_rec ON m.message_id = m_rec.message_id
+    LEFT JOIN user rec ON m_rec.recipient_user_id = rec.user_id
+    LEFT JOIN user_room u_r ON r.room_id = u_r.room_id
+    LEFT JOIN user this_user ON u_r.user_id = this_user.user_id
+    WHERE (this_user.login_id IS NULL OR this_user.login_id = #{loginId})
   </sql>
 
   <select id="findOne" resultMap="message">
     <include refid="selectAll" />
-    WHERE message_uuid = #{id}
+      AND message_uuid = #{id}
   </select>
 
-  <select id="findAll" resultMap="message">
+  <select id="findBy" resultMap="message">
     <include refid="selectAll" />
+    <if test="!params.rooms.isEmpty()">
+      AND r.room_name IN
+      <foreach item="room" collection="params.rooms" open="(" close=")" separator=",">
+        #{room}
+      </foreach>
+    </if>
+    <if test="!params.userIds.isEmpty()">
+      AND u.user_uuid IN
+      <foreach item="userId" collection="params.userIds" open="(" close=")" separator=",">
+        #{userId}
+      </foreach>
+    </if>
+    <if test="params.direct == true">
+      AND rec.login_id IS NOT NULL
+      AND rec.login_id = #{loginId}
+        OR u.login_id = #{loginId}
+    </if>
+    <if test="params.direct != true">
+      AND rec.login_id IS NULL
+      AND u_r.is_active = 1
+    </if>
+    <if test="params.since != null">
+      AND m.create_date <![CDATA[>=]]> #{params.since}
+    </if>
+    <if test="params.until != null">
+      AND m.create_date <![CDATA[<=]]> #{params.until}
+    </if>
     ORDER BY m.create_date
+    <if test="params.top != null">
+      LIMIT #{params.top}
+    </if>
   </select>
 
   <insert id="create" parameterMap="message">

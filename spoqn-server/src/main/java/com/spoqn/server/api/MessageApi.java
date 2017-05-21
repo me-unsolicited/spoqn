@@ -1,6 +1,8 @@
 package com.spoqn.server.api;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -10,20 +12,43 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.spoqn.server.api.params.MessageParams;
 import com.spoqn.server.core.services.MessageService;
 import com.spoqn.server.data.Message;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Path("/messages")
+@Slf4j
 public class MessageApi {
 
     @Inject private MessageService service;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Message> get() {
-        return service.read();
+    public List<Message> get(
+            @QueryParam("rooms") Set<String> rooms,
+            @QueryParam("users") Set<UUID> userIds,
+            @QueryParam("direct") Boolean direct,
+            @QueryParam("since") Instant since,
+            @QueryParam("until") Instant until,
+            @QueryParam("top") Integer top) {
+
+        MessageParams params = MessageParams.builder()
+                .rooms(rooms)
+                .userIds(userIds)
+                .direct(direct)
+                .since(since)
+                .until(until)
+                .top(top)
+                .build();
+
+        log.debug("params: {}", params);
+
+        return service.read(params);
     }
 
     @GET

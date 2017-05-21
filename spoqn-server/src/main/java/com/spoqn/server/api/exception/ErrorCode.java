@@ -11,7 +11,8 @@ public enum ErrorCode {
     MALFORMED_BASIC_AUTH("Expected username:password format"),
     USERNAME_TAKEN("Username is taken"),
     PASSWORD_INADEQUATE("Password does not meet requirements"),
-    USER_NOT_FOUND("User cannot be found");
+    USER_NOT_FOUND("User cannot be found"),
+    MALFORMED_PARAM("Parameter string cannot be parsed");
 
     public static final ErrorCode from(String code) {
 
