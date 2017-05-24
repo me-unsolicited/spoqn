@@ -26,15 +26,10 @@ public class InstantParamConverterProvider implements ParamConverterProvider {
 
         @Override
         public T fromString(String value) {
-
-            if (value == null)
-                return null;
-            else
-                return rawType.cast(parse(value));
+            return value == null ? null : rawType.cast(parse(value));
         }
 
         private Instant parse(String value) {
-
             try {
                 return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(value));
             } catch (DateTimeParseException e) {
