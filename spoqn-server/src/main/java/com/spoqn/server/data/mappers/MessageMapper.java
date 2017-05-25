@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.spoqn.server.api.params.MessageParams;
 import com.spoqn.server.data.Message;
+import com.spoqn.server.data.params.MessageParams;
 
 public interface MessageMapper {
 

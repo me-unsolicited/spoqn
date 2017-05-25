@@ -7,10 +7,10 @@ import javax.inject.Inject;
 
 import org.mybatis.guice.transactional.Transactional;
 
-import com.spoqn.server.api.params.MessageParams;
 import com.spoqn.server.core.SpoqnContext;
 import com.spoqn.server.data.Message;
 import com.spoqn.server.data.access.MessageDao;
+import com.spoqn.server.data.params.MessageParams;
 
 @Transactional
 public class MessageService {

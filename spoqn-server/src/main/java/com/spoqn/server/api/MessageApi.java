@@ -15,9 +15,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import com.spoqn.server.api.params.MessageParams;
 import com.spoqn.server.core.services.MessageService;
 import com.spoqn.server.data.Message;
+import com.spoqn.server.data.params.MessageParams;
 
 import lombok.extern.slf4j.Slf4j;
 
