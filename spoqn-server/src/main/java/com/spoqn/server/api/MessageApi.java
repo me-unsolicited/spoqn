@@ -19,10 +19,7 @@ import com.spoqn.server.core.services.MessageService;
 import com.spoqn.server.data.Message;
 import com.spoqn.server.data.params.MessageParams;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Path("/messages")
-@Slf4j
 public class MessageApi {
 
     @Inject private MessageService service;
@@ -45,8 +42,6 @@ public class MessageApi {
                 .until(until)
                 .top(top)
                 .build();
-
-        log.debug("params: {}", params);
 
         return service.read(params);
     }
