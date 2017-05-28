@@ -5,6 +5,7 @@ import {push} from 'react-router-redux';
 import {connect} from "react-redux";
 
 import RaisedButton from 'material-ui/RaisedButton';
+import Checkbox from 'material-ui/Checkbox';
 import TextField from 'material-ui/TextField';
 import {AuthCss} from './Authentication.css';
 
@@ -70,8 +71,8 @@ class SignIn extends React.Component {
                     <TextField hintText="And Of Course A Password" floatingLabelText="Password" type="password" id="password"
                                fullWidth={true} onChange={this.handlePassword.bind(this)}/>
                 </div>
-                <div className="checkbox">
-                    <label><input type="checkbox"/> Remember me</label>
+                <div className="remember-me">
+                    <Checkbox label="Remember Me"/>
                 </div>
                 <RaisedButton label="Sign In" onClick={this.getUser.bind(this)}/>
             </div>

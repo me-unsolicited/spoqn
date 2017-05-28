@@ -3,3 +3,7 @@
     height: 500px;
     margin: auto;
 }
+
+.auth-component .remember-me {
+    margin: 10px 0;
+}
