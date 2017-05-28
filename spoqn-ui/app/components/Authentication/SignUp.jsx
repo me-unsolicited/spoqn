@@ -1,59 +1,94 @@
 import React from 'react';
-import $ from 'VendorJS/jQuery.min';
+import PropTypes from 'prop-types';
+import Services from 'Common/Services';
+import {connect} from "react-redux";
 
-export class SignUp extends React.Component {
+import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField';
+import {AuthCss} from './Authentication.css';
+
+class SignUp extends React.Component {
     constructor(props) {
         super(props);
     }
 
     handleEmail(e) {
-        this.state.username = e.target.value;
+        this.props.dispatch({
+            type: 'SET_EMAIL',
+            email: e.target.value
+        });
     }
 
     handlePassword(e) {
-        this.state.password = e.target.value;
+        this.props.dispatch({
+            type: 'SET_PASSWORD',
+            password: e.target.value
+        });
     }
 
-    createUser(e){
-        let deferred = $.Deferred(),
+    handleUsername(e) {
+        this.props.dispatch({
+            type: 'SET_USERNAME',
+            username: e.target.value
+        });
+    }
+
+    createUser() {
+        let state = this.context.store.getState().authReducer,
             user = {
-                username: this.state.username,
-                password: this.state.password
+                loginId: state.email,
+                displayName: state.username,
+                password: state.password
             };
 
-        $.ajax({
+        Services.post({
             url: '/api/users',
-            data: JSON.stringify(user),
-            type: 'POST',
-            headers: {
-                'Content-Type':'application/json',
-                'Accept':'application/json'
-            },
-            success: deferred.resolve,
-            error: deferred.reject
-        });
-
-        deferred.promise().done(function (response) {
+            data: JSON.stringify(user)
+        }).done(function (response) {
+            console.log(response);
+        }).fail(function (response) {
             console.log(response);
         });
     }
 
     render() {
         return (
-            <div>
-                <div className="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" className="form-control" id="email" placeholder="Enter email" onChange={this.handleEmail.bind(this)}/>
+            <div className="auth-component">
+                <div>
+                    <TextField hintText="A Username If You Don't Mind" floatingLabelText="Username" type="text" id="username"
+                               fullWidth={true} onChange={this.handleUsername.bind(this)}/>
                 </div>
-                <div className="form-group">
-                    <label for="pwd">Password:</label>
-                    <input type="password" className="form-control" id="pwd" placeholder="Enter password" onChange={this.handlePassword.bind(this)}/>
+                <div>
+                    <TextField hintText="Your E-mail Address Please" floatingLabelText="E-mail Address" type="email"
+                               className="email-address" id="email-address"
+                               fullWidth={true} onChange={this.handleEmail.bind(this)}/>
                 </div>
-                <div className="checkbox">
-                    <label><input type="checkbox"/> Remember me</label>
+                <div>
+                    <TextField hintText="And Of Course A Password" floatingLabelText="Password" type="password" id="password"
+                               fullWidth={true} onChange={this.handlePassword.bind(this)}/>
                 </div>
-                <button className="btn btn-default" onClick={this.createUser.bind(this)}>Submit</button>
+                <RaisedButton label="Sign Up" onClick={this.createUser.bind(this)}/>
             </div>
         )
     }
 }
+
+SignUp.propTypes = {
+    email: PropTypes.string,
+    password: PropTypes.string,
+    username: PropTypes.string
+};
+
+SignUp.contextTypes = {
+    store: PropTypes.object
+};
+
+function mapStateToProps(state) {
+    return {
+        email: state.email,
+        password: state.password,
+        username: state.username
+    };
+}
+
+export default connect(mapStateToProps)(SignUp);

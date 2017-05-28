@@ -1,5 +1,7 @@
 package com.spoqn.server.data.access;
 
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 import org.mybatis.guice.transactional.Transactional;
@@ -16,11 +18,12 @@ public class UserDao {
     public User create(User user, String passHash) {
 
         // create the user and store their password hash
+    	user = user.toBuilder().uuid(UUID.randomUUID()).build();
         mapper.create(user);
         mapper.createPassword(user.getLoginId(), passHash);
 
         // return the updated user
-        return mapper.get(user.getLoginId());
+        return mapper.getByLoginId(user.getLoginId());
     }
 
     public String createDevice(String loginId, String deviceName, String deviceHash) {
@@ -38,9 +41,13 @@ public class UserDao {
     public String findDeviceName(String loginId, String deviceHash) {
         return mapper.getDeviceName(loginId, deviceHash);
     }
-
+    
+    public User find(UUID uuid) {
+        return mapper.get(uuid);
+    }
+    
     public User find(String loginId) {
-        return mapper.get(loginId);
+        return mapper.getByLoginId(loginId);
     }
 
     public String findPassHash(String loginId) {

@@ -1,13 +1,16 @@
 package com.spoqn.server.data.mappers;
 
+import java.util.UUID;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.spoqn.server.data.User;
 
 public interface UserMapper {
 
-    User get(@Param("loginId") String loginId);
-    void create(User user);
+    User get(@Param("uuid") UUID uuid);
+    User getByLoginId(@Param("loginId") String loginId);
+    void create(@Param("user") User user);
     String getPassHash(@Param("loginId") String loginId);
     void createPassword(@Param("loginId") String loginId, @Param("hash") String hash);
     String getDeviceName(@Param("loginId") String loginId, @Param("hash") String hash);
