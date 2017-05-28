@@ -9,9 +9,9 @@ import javax.inject.Inject;
 import org.mybatis.guice.transactional.Transactional;
 import org.mybatis.guice.transactional.Transactional.TxType;
 
-import com.spoqn.server.api.params.MessageParams;
 import com.spoqn.server.data.Message;
 import com.spoqn.server.data.mappers.MessageMapper;
+import com.spoqn.server.data.params.MessageParams;
 
 @Transactional(value = TxType.MANDATORY)
 public class MessageDao {

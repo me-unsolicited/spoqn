@@ -1,4 +1,4 @@
-package com.spoqn.server.api.params;
+package com.spoqn.server.data.params;
 
 import java.time.Instant;
 import java.util.Set;

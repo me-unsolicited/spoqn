@@ -15,14 +15,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import com.spoqn.server.api.params.MessageParams;
 import com.spoqn.server.core.services.MessageService;
 import com.spoqn.server.data.Message;
-
-import lombok.extern.slf4j.Slf4j;
+import com.spoqn.server.data.params.MessageParams;
 
 @Path("/messages")
-@Slf4j
 public class MessageApi {
 
     @Inject private MessageService service;
@@ -45,8 +42,6 @@ public class MessageApi {
                 .until(until)
                 .top(top)
                 .build();
-
-        log.debug("params: {}", params);
 
         return service.read(params);
     }
