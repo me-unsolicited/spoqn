@@ -36,9 +36,9 @@ public class UserService {
 
     @Inject private SpoqnContext context;
     @Inject private UserDao dao;
-
-    public User getUser(String loginId) {
-        return dao.find(loginId);
+    
+    public User getUser(UUID uuid) {
+        return dao.find(uuid);
     }
 
     public User createUser(User user) {

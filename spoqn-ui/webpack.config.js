@@ -10,6 +10,7 @@ module.exports = {
     resolve: {
         alias: {
             Components: path.resolve(__dirname, './app/components'),
+            Common: path.resolve(__dirname, './app/common'),
             VendorJS: path.resolve(__dirname, './app/vendor/js'),
             VendorCSS: path.resolve(__dirname, './app/vendor/css'),
             Styles: path.resolve(__dirname, './app/styles')
@@ -21,16 +22,29 @@ module.exports = {
             {
                 loader: 'babel-loader',
                 query: {
-                    presets: ['react', 'es2015']
+                    presets: ['react', 'es2015', 'stage-0']
                 },
-                test: /\.jsx?$/,
+                test: /\.jsx?$|\.js?$/,
                 exclude: /(node_modules|bower_components)/
             },
             {
                 test: /\.css$/,
                 loader: "style-loader!css-loader"
+            },
+            {
+                loader: "url-loader?name=./dist/[hash].[ext]?limit=10000&mimetype=application/font-woff",
+                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/
+            },
+            {
+                loader: "file-loader?name=./dist/assets/fonts/[hash].[ext]",
+                test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/
+            },
+            {
+                loader: "file-loader?name=./dist/assets/images/[hash].[ext]",
+                test: /\.(svg|jpeg|jpg|png)(\?v=[0-9]\.[0-9]\.[0-9])?$/
             }
         ]
+
     },
     plugins: [
         new HtmlWebpackPlugin({

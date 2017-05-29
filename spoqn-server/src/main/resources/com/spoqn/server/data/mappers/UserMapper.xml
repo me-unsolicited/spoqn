@@ -13,6 +13,7 @@
 
   <resultMap id="user" type="com.spoqn.server.data.User">
     <constructor>
+      <arg column="user_uuid" javaType="java.util.UUID"/>
       <arg column="login_id" javaType="String" />
       <arg column="display_name" javaType="String" />
       <arg column="create_date" javaType="java.time.LocalDate" />
@@ -21,7 +22,18 @@
 
   <select id="get" resultMap="user">
     SELECT
-      login_id
+      user_uuid
+    , login_id
+    , display_name
+    , create_date
+    FROM user
+    WHERE user_uuid = #{uuid}
+  </select>
+  
+  <select id="getByLoginId" resultMap="user">
+    SELECT
+      user_uuid
+    , login_id
     , display_name
     , create_date
     FROM user
@@ -30,8 +42,9 @@
   
   <insert id="create" parameterMap="user">
     INSERT user SET
-      login_id = #{loginId}
-    , display_name = #{displayName}
+      login_id = #{user.loginId}
+    , user_uuid = #{user.uuid}
+    , display_name = #{user.displayName}
     , create_date = CURDATE()
   </insert>
 

@@ -1,5 +1,9 @@
-.sign-in-form {
+.auth-component {
     width: 500px;
     height: 500px;
     margin: auto;
+}
+
+.auth-component .remember-me {
+    margin: 10px 0;
 }

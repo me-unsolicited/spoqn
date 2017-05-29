@@ -1,3 +1,9 @@
 .inline-block {
     display: inline-block;
 }
+
+.spoqn-app {
+    background: url('../images/index_group_of_people.jpg');
+    height: 100%;
+    width: 100%;
+}

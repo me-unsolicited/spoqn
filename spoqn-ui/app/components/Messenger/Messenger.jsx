@@ -1,17 +1,12 @@
 import React from 'react';
-import {Message} from 'Components/Messenger/Message';
 import $ from 'VendorJS/jQuery.min';
-import ReactDOM from 'react-dom';
-import css from './Messenger.css';
+import {Message} from 'Components/Messenger/Message';
+
+import {MessengerCSS} from './Messenger.css';
 
 export class Messenger extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            newMessage: '',
-            messages: []
-        };
         this._getMessages();
     }
 
@@ -43,10 +38,11 @@ export class Messenger extends React.Component {
         });
 
         deferred.promise().done(function (response) {
-            context.setState({
+            this.store.dispatch({
+                type: 'UPDATE_MESSAGE_LIST',
                 messages: response
             });
-            //ReactDOM.render(<Message messages={context.state.messages}/>, document.getElementById('messenger-view'));
+
             context.focusLatestMessage();
         });
     }
@@ -75,21 +71,25 @@ export class Messenger extends React.Component {
 
             messageList.push(response);
 
-            context.setState({
+            this.store.dispatch({
+                type: 'UPDATE_MESSAGE_LIST',
                 messages: messageList
             });
         });
     }
 
     handleNewMessage(e) {
-        this.state.newMessage = e.target.value;
+        this.store.dispatch({
+            type: 'ADD_NEW_MESSAGE',
+            messages: e.target.value
+        });
     }
 
     render() {
         return (
             <div>
                 <div className="messenger-view" id="messenger-view">
-                    <Message messages={this.state.messages}/>
+                    <Message messages={this.store.messages}/>
                 </div>
                 <div className="messenger-author">
                     <input placeholder="Type Message... Get involved!" type="text"
@@ -103,3 +103,7 @@ export class Messenger extends React.Component {
         );
     }
 }
+
+Messenger.contextTypes = {
+    store: React.PropTypes.object
+};

@@ -1,68 +1,99 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import $ from 'VendorJS/jQuery.min';
+import PropTypes from 'prop-types';
+import Services from 'Common/Services';
+import {push} from 'react-router-redux';
+import {connect} from "react-redux";
 
-import {Home} from 'Components/Home/Home';
+import RaisedButton from 'material-ui/RaisedButton';
+import Checkbox from 'material-ui/Checkbox';
+import TextField from 'material-ui/TextField';
 import {AuthCss} from './Authentication.css';
 
-export class SignIn extends React.Component {
+class SignIn extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            username: '',
-            password: ''
-        };
-
     }
 
     handleEmail(e) {
-        this.state.username = e.target.value;
+        this.props.dispatch({
+            type: 'SET_EMAIL',
+            email: e.target.value
+        });
     }
 
     handlePassword(e) {
-        this.state.password = e.target.value;
+        this.props.dispatch({
+            type: 'SET_PASSWORD',
+            password: e.target.value
+        });
     }
 
-    createUser(){
-        let deferred = $.Deferred(),
+    getUser() {
+        let self = this,
+            state = this.context.store.getState().authReducer,
             user = {
-                username: this.state.username,
-                password: this.state.password
+                loginId: state.email,
+                displayName: state.username,
+                password: state.password
             };
 
-        $.ajax({
-            url: '/api/token',
-            type: 'GET',
+        Services.get({
             headers: {
-                'Authorization': 'Basic ' + window.btoa(user.username + ':' +  user.password),
-                'Accept':'application/json'
+                'Authorization': 'Basic ' + window.btoa(user.loginId + ':' + user.password),
             },
-            success: deferred.resolve,
-            error: deferred.reject
-        });
+            url: '/api/token',
+        }).done(function (response) {
+            self.props.dispatch({
+                type: 'SET_EMAIL',
+                email: ''
+            });
 
-        deferred.promise().done(function (response) {
-            ReactDOM.render(<Home token={response}/>, document.getElementById('app'));
+            self.props.dispatch({
+                type: 'SET_PASSWORD',
+                password: ''
+            });
+
+            self.context.store.dispatch(push('/signup'));
+        }).fail(function (response) {
+            debugger;
         });
     }
 
     render() {
         return (
-            <div className="sign-in-form">
-                <div className="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" className="form-control" id="email" placeholder="Enter email" onChange={this.handleEmail.bind(this)}/>
+            <div className="auth-component">
+                <div>
+                    <TextField hintText="Your E-mail Address Please" floatingLabelText="E-mail Address" type="email"
+                               className="email-address" id="email-address"
+                               fullWidth={true} onChange={this.handleEmail.bind(this)}/>
                 </div>
-                <div className="form-group">
-                    <label for="pwd">Password:</label>
-                    <input type="password" className="form-control" id="pwd" placeholder="Enter password" onChange={this.handlePassword.bind(this)}/>
+                <div>
+                    <TextField hintText="And Of Course A Password" floatingLabelText="Password" type="password" id="password"
+                               fullWidth={true} onChange={this.handlePassword.bind(this)}/>
                 </div>
-                <div className="checkbox">
-                    <label><input type="checkbox"/> Remember me</label>
+                <div className="remember-me">
+                    <Checkbox label="Remember Me"/>
                 </div>
-                <button className="btn btn-default" onClick={this.createUser.bind(this)}>Submit</button>
+                <RaisedButton label="Sign In" onClick={this.getUser.bind(this)}/>
             </div>
         )
     }
 }
+
+SignIn.propTypes = {
+    email: PropTypes.string,
+    password: PropTypes.string
+};
+
+SignIn.contextTypes = {
+    store: PropTypes.object
+};
+
+function mapStateToProps(state) {
+    return {
+        email: state.email,
+        password: state.password
+    };
+}
+
+export default connect(mapStateToProps)(SignIn);
