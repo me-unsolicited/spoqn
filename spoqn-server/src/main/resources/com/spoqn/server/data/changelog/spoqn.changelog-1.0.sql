@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 4
-DEFAULT CHARACTER SET = latin1
+DEFAULT CHARACTER SET = latin1;
 --rollback DROP TABLE `user`;
 
 --changeset bmannon:3
@@ -85,10 +85,12 @@ DEFAULT CHARACTER SET = latin1;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `topic` (
   `topic_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `topic_uuid` VARCHAR(36) NOT NULL,
   `topic_url` VARCHAR(2000) NOT NULL,
   PRIMARY KEY (`topic_id`),
   UNIQUE INDEX `topic_id_UNIQUE` (`topic_id` ASC),
-  UNIQUE INDEX `topic_url_UNIQUE` (`topic_url` ASC))
+  UNIQUE INDEX `topic_url_UNIQUE` (`topic_url` ASC),
+  UNIQUE INDEX `topic_uuid_UNIQUE` (`topic_uuid` ASC))
 ENGINE = InnoDB;
 --rollback DROP TABLE `topic`;
 
@@ -127,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `message` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 10
-DEFAULT CHARACTER SET = latin1
+DEFAULT CHARACTER SET = latin1;
 --rollback DROP TABLE `message`;
 
 --changeset bmannon:7

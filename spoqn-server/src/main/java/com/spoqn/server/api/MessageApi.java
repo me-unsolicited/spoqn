@@ -28,7 +28,9 @@ public class MessageApi {
     @Produces(MediaType.APPLICATION_JSON)
     public List<Message> get(
             @QueryParam("rooms") Set<String> rooms,
-            @QueryParam("users") Set<UUID> userIds,
+            @QueryParam("topics") Set<UUID> topics,
+            @QueryParam("tags") Set<String> tags,
+            @QueryParam("users") Set<UUID> users,
             @QueryParam("direct") Boolean direct,
             @QueryParam("since") Instant since,
             @QueryParam("until") Instant until,
@@ -36,7 +38,9 @@ public class MessageApi {
 
         MessageParams params = MessageParams.builder()
                 .rooms(rooms)
-                .userIds(userIds)
+                .topics(topics)
+                .tags(tags)
+                .users(users)
                 .direct(direct)
                 .since(since)
                 .until(until)

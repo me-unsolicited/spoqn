@@ -14,7 +14,9 @@ import lombok.Value;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MessageParams {
     private Set<String> rooms;
-    private Set<UUID> userIds;
+    private Set<UUID> topics;
+    private Set<String> tags;
+    private Set<UUID> users;
     private Boolean direct;
     private Instant since;
     private Instant until;

@@ -32,6 +32,9 @@
     LEFT JOIN message_attachment m_att ON m.message_id = m_att.message_id
     LEFT JOIN content c ON m_att.content_id = c.content_id
     LEFT JOIN room r ON m.room_id = r.room_id
+    LEFT JOIN topic ON m.topic_id = topic.topic_id
+    LEFT JOIN topic_tag ON topic.topic_id = topic_tag.topic_id
+    LEFT JOIN tag ON topic_tag.tag_id = tag.tag_id
     LEFT JOIN message_recipient m_rec ON m.message_id = m_rec.message_id
     LEFT JOIN user rec ON m_rec.recipient_user_id = rec.user_id
     LEFT JOIN user_room u_r ON r.room_id = u_r.room_id
@@ -52,10 +55,22 @@
         #{room}
       </foreach>
     </if>
-    <if test="!params.userIds.isEmpty()">
+    <if test="!params.topics.isEmpty()">
+      AND topic.topic_uuid IN
+      <foreach item="topic" collection="params.topics" open="(" close=")" separator=",">
+        #{topic}
+      </foreach>
+    </if>
+    <if test="!params.tags.isEmpty()">
+      AND r.room_name IN
+      <foreach item="tag" collection="params.tags" open="(" close=")" separator=",">
+        #{tag}
+      </foreach>
+    </if>
+    <if test="!params.users.isEmpty()">
       AND u.user_uuid IN
-      <foreach item="userId" collection="params.userIds" open="(" close=")" separator=",">
-        #{userId}
+      <foreach item="user" collection="params.users" open="(" close=")" separator=",">
+        #{user}
       </foreach>
     </if>
     <if test="params.direct == true">
