@@ -15,21 +15,29 @@ public class UUIDHandler implements TypeHandler<UUID> {
 
     @Override
     public void setParameter(PreparedStatement ps, int i, UUID parameter, JdbcType jdbcType) throws SQLException {
-        ps.setString(i, parameter.toString());
+        ps.setString(i, toString(parameter));
     }
 
     @Override
     public UUID getResult(ResultSet rs, String columnName) throws SQLException {
-        return UUID.fromString(rs.getString(columnName));
+        return fromString(rs.getString(columnName));
     }
 
     @Override
     public UUID getResult(ResultSet rs, int columnIndex) throws SQLException {
-        return UUID.fromString(rs.getString(columnIndex));
+        return fromString(rs.getString(columnIndex));
     }
 
     @Override
     public UUID getResult(CallableStatement cs, int columnIndex) throws SQLException {
-        return UUID.fromString(cs.getString(columnIndex));
+        return fromString(cs.getString(columnIndex));
+    }
+
+    private String toString(UUID uuid) {
+        return uuid == null ? null : uuid.toString();
+    }
+
+    private UUID fromString(String name) {
+        return name == null ? null : UUID.fromString(name);
     }
 }

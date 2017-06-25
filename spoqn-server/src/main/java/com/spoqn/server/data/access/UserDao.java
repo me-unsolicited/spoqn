@@ -18,63 +18,63 @@ public class UserDao {
     public User create(User user, String passHash) {
 
         // create the user and store their password hash
-    	user = user.toBuilder().uuid(UUID.randomUUID()).build();
-        mapper.create(user);
-        mapper.createPassword(user.getLoginId(), passHash);
+        user = user.toBuilder().uuid(UUID.randomUUID()).build();
+        mapper.create(user.getUuid(), user.getLoginId(), user.getDisplayName());
+        mapper.createPassword(user.getUuid(), passHash);
 
         // return the updated user
-        return mapper.getByLoginId(user.getLoginId());
+        return mapper.get(user.getUuid());
     }
 
-    public String createDevice(String loginId, String deviceName, String deviceHash) {
+    public String createDevice(UUID user, String deviceName, String deviceHash) {
 
         // create the device if it doesn't already exist
-        String knownDeviceName = mapper.getDeviceName(loginId, deviceHash);
+        String knownDeviceName = mapper.getDeviceName(user, deviceHash);
         if (knownDeviceName == null) {
-            mapper.createDevice(loginId, deviceName, deviceHash);
+            mapper.createDevice(user, deviceName, deviceHash);
             knownDeviceName = deviceName;
         }
 
         return knownDeviceName;
     }
 
-    public String findDeviceName(String loginId, String deviceHash) {
-        return mapper.getDeviceName(loginId, deviceHash);
+    public String findDeviceName(UUID user, String deviceHash) {
+        return mapper.getDeviceName(user, deviceHash);
     }
-    
+
     public User find(UUID uuid) {
         return mapper.get(uuid);
     }
-    
+
     public User find(String loginId) {
         return mapper.getByLoginId(loginId);
     }
 
-    public String findPassHash(String loginId) {
-        return mapper.getPassHash(loginId);
+    public String findPassHash(UUID user) {
+        return mapper.getPassHash(user);
     }
 
-    public String findTokenHash(String loginId, String deviceName) {
-        return mapper.getTokenHash(loginId, deviceName);
+    public String findTokenHash(UUID user, String deviceName) {
+        return mapper.getTokenHash(user, deviceName);
     }
 
-    public void updateToken(String loginId, String deviceName, String tokenHash) {
+    public void updateToken(UUID user, String deviceName, String tokenHash) {
 
         // put the salted hash in the database; update if already exists
-        boolean alreadyExists = mapper.getTokenHash(loginId, deviceName) != null;
+        boolean alreadyExists = mapper.getTokenHash(user, deviceName) != null;
         if (alreadyExists)
-            mapper.updateToken(loginId, deviceName, tokenHash);
+            mapper.updateToken(user, deviceName, tokenHash);
         else
-            mapper.createToken(loginId, deviceName, tokenHash);
+            mapper.createToken(user, deviceName, tokenHash);
     }
 
-    public void deleteTokens(String loginId) {
-        mapper.deleteTokens(loginId);
-        mapper.deleteDevices(loginId);
+    public void deleteTokens(UUID user) {
+        mapper.deleteTokens(user);
+        mapper.deleteDevices(user);
     }
 
-    public void deleteToken(String loginId, String deviceName) {
-        mapper.deleteToken(loginId, deviceName);
-        mapper.deleteDevice(loginId, deviceName);
+    public void deleteToken(UUID user, String deviceName) {
+        mapper.deleteToken(user, deviceName);
+        mapper.deleteDevice(user, deviceName);
     }
 }

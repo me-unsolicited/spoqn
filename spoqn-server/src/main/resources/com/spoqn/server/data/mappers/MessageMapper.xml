@@ -4,20 +4,17 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spoqn.server.data.mappers.MessageMapper">
 
-  <parameterMap id="message" type="com.spoqn.server.data.Message">
-    <parameter property="id" />
-    <parameter property="created" />
-    <parameter property="loginId" />
-  </parameterMap>
-
-  <resultMap id="message" type="com.spoqn.server.data.Message">
-    <constructor>
-      <idArg column="message_uuid" javaType="java.util.UUID" />
-      <arg column="message_text" javaType="String" />
-      <arg column="create_date" javaType="java.time.Instant" />
-      <arg column="login_id" javaType="String" />
-      <arg column="content_uuid" javaType="java.util.UUID" />
-    </constructor>
+  <resultMap id="message" type="com.spoqn.server.data.result.MessageResult">
+    <id     property="id"           column="message_uuid"   javaType="java.util.UUID" />
+    <result property="text"         column="message_text"   javaType="String" />
+    <result property="created"      column="create_date"    javaType="java.time.Instant" />
+    <result property="user"         column="user_uuid"      javaType="java.util.UUID" />
+    <result property="attachments"  column="content_uuid"   javaType="java.util.UUID" />
+    <result property="direct"       column="is_direct"      javaType="boolean" />
+    <result property="recipient"    column="recipient_uuid" javaType="java.util.UUID" />
+    <result property="room"         column="room_name"      javaType="String" />
+    <result property="topic"        column="topic_uuid"     javaType="java.util.UUID" />
+    <result property="tags"         column="tag_name"       javaType="String" />
   </resultMap>
 
   <sql id="selectAll">
@@ -25,8 +22,13 @@
       m.message_uuid
     , m.message_text
     , m.create_date
-    , u.login_id
+    , u.user_uuid
     , c.content_uuid
+    , rec.user_uuid IS NOT NULL AS is_direct
+    , rec.user_uuid AS recipient_uuid
+    , r.room_name
+    , topic.topic_uuid
+    , tag.tag_name
     FROM message m
     INNER JOIN user u ON m.user_id = u.user_id
     LEFT JOIN message_attachment m_att ON m.message_id = m_att.message_id
@@ -39,7 +41,7 @@
     LEFT JOIN user rec ON m_rec.recipient_user_id = rec.user_id
     LEFT JOIN user_room u_r ON r.room_id = u_r.room_id
     LEFT JOIN user this_user ON u_r.user_id = this_user.user_id
-    WHERE (this_user.login_id IS NULL OR this_user.login_id = #{loginId})
+    WHERE (this_user.user_uuid IS NULL OR this_user.user_uuid = #{user})
   </sql>
 
   <select id="findOne" resultMap="message">
@@ -74,9 +76,9 @@
       </foreach>
     </if>
     <if test="params.direct == true">
-      AND rec.login_id IS NOT NULL
-      AND rec.login_id = #{loginId}
-        OR u.login_id = #{loginId}
+      AND rec.user_uuid IS NOT NULL
+      AND rec.user_uuid = #{user}
+        OR u.user_uuid = #{user}
     </if>
     <if test="params.direct != true">
       AND rec.login_id IS NULL
@@ -94,18 +96,38 @@
     </if>
   </select>
 
-  <insert id="create" parameterMap="message">
+  <insert id="createMessage">
     INSERT message SET
       message_uuid = #{id}
-    , user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
-    , content_id = (SELECT content_id FROM content WHERE content_uuid = #{contentId})
+    , message_text = #{text}
     , create_date = UTC_TIMESTAMP()
+    , user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
+    , room_id = (SELECT room_id FROM room WHERE room_name = #{room})
+    , topic_id = (
+        SELECT topic_id FROM room_topic
+        JOIN room ON room_topic.room_id = room.room_id
+        WHERE room_name = #{room}
+        ORDER BY room_topic.create_date DESC
+        LIMIT 1
+      )
   </insert>
 
-  <insert id="createContent" parameterMap="message">
+  <insert id="addRecipient">
+    INSERT message_recipient SET
+      message_id = (SELECT message_id FROM message WHERE message_uuid = #{message})
+    , recipient_user_id = (SELECT user_id FROM user WHERE user_uuid = #{user}")
+  </insert>
+
+  <insert id="createContent">
     INSERT content SET
-      content_uuid = #{contentId}
+      content_uuid = #{content}
     , mime_type = #{mimeType}
     , body = #{body}
+  </insert>
+
+  <insert id="attachContent">
+    INSERT message_attachment SET
+      message_id = (SELECT message_id FROM message WHERE message_uuid = #{message})
+    , content_id = (SELECT content_id FROM content WHERE content_uuid = #{content})
   </insert>
 </mapper>

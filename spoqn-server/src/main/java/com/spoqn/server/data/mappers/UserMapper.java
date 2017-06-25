@@ -10,16 +10,16 @@ public interface UserMapper {
 
     User get(@Param("uuid") UUID uuid);
     User getByLoginId(@Param("loginId") String loginId);
-    void create(@Param("user") User user);
-    String getPassHash(@Param("loginId") String loginId);
-    void createPassword(@Param("loginId") String loginId, @Param("hash") String hash);
-    String getDeviceName(@Param("loginId") String loginId, @Param("hash") String hash);
-    void createDevice(@Param("loginId") String loginId, @Param("deviceName") String deviceName, @Param("hash") String hash);
-    void deleteDevice(@Param("loginId") String loginId, @Param("deviceName") String deviceName);
-    void deleteDevices(@Param("loginId") String loginId);
-    String getTokenHash(@Param("loginId") String loginId, @Param("deviceName") String deviceName);
-    void createToken(@Param("loginId") String loginId, @Param("deviceName") String deviceName, @Param("hash") String hash);
-    void updateToken(@Param("loginId") String loginId, @Param("deviceName") String deviceName, @Param("hash") String hash);
-    void deleteToken(@Param("loginId") String loginId, @Param("deviceName") String deviceName);
-    void deleteTokens(@Param("loginId") String loginId);
+    void create(@Param("user") UUID id, @Param("loginId") String loginId, @Param("displayName") String displayName);
+    String getPassHash(@Param("user") UUID user);
+    void createPassword(@Param("user") UUID user, @Param("hash") String hash);
+    String getDeviceName(@Param("user") UUID user, @Param("hash") String hash);
+    void createDevice(@Param("user") UUID user, @Param("deviceName") String deviceName, @Param("hash") String hash);
+    void deleteDevice(@Param("user") UUID user, @Param("deviceName") String deviceName);
+    void deleteDevices(@Param("user") UUID user);
+    String getTokenHash(@Param("user") UUID user, @Param("deviceName") String deviceName);
+    void createToken(@Param("user") UUID user, @Param("deviceName") String deviceName, @Param("hash") String hash);
+    void updateToken(@Param("user") UUID user, @Param("deviceName") String deviceName, @Param("hash") String hash);
+    void deleteToken(@Param("user") UUID user, @Param("deviceName") String deviceName);
+    void deleteTokens(@Param("user") UUID user);
 }

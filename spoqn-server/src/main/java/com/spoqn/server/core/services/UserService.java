@@ -70,8 +70,13 @@ public class UserService {
         if (loginId.isEmpty() || password.isEmpty())
             throw new AuthenticationException();
 
+        // TODO check user is active
+        User user = dao.find(loginId);
+        if (user == null)
+            throw new AuthenticationException();
+
         // get the stored password hash
-        String hash = dao.findPassHash(loginId);
+        String hash = dao.findPassHash(user.getUuid());
         if (hash == null)
             throw new AuthenticationException();
 
@@ -80,11 +85,11 @@ public class UserService {
         if (!authenticated)
             throw new AuthenticationException();
 
-        String knownDeviceName = dao.createDevice(loginId, deviceName, deviceHash);
+        String knownDeviceName = dao.createDevice(user.getUuid(), deviceName, deviceHash);
 
         return TokenMap.builder()
-                .access(issueAccessToken(loginId))
-                .refresh(issueRefreshToken(loginId, knownDeviceName))
+                .access(issueAccessToken(user.getUuid()))
+                .refresh(issueRefreshToken(user.getUuid(), knownDeviceName))
                 .build();
     }
 
@@ -98,13 +103,18 @@ public class UserService {
         if (loginId.isEmpty())
             throw new AuthenticationException();
 
+        // TODO check user is active
+        User user = dao.find(loginId);
+        if (user == null)
+            throw new AuthenticationException();
+
         // verify the device hash
-        String deviceName = dao.findDeviceName(loginId, deviceHash);
+        String deviceName = dao.findDeviceName(user.getUuid(), deviceHash);
         if (deviceName == null)
             throw new AuthenticationException();
 
         // get the expected token hash for this user and device
-        String hash = dao.findTokenHash(loginId, deviceName);
+        String hash = dao.findTokenHash(user.getUuid(), deviceName);
         if (hash == null)
             throw new AuthenticationException();
 
@@ -114,20 +124,20 @@ public class UserService {
             throw new AuthenticationException();
 
         return TokenMap.builder()
-                .access(issueAccessToken(loginId))
+                .access(issueAccessToken(user.getUuid()))
                 .refresh(refresh)
                 .build();
     }
 
     public void revoke() {
-        dao.deleteTokens(context.getLoginId());
+        dao.deleteTokens(context.getUserId());
     }
 
     public void revoke(@NonNull String deviceName) {
-        dao.deleteToken(context.getLoginId(), deviceName);
+        dao.deleteToken(context.getUserId(), deviceName);
     }
 
-    private String issueAccessToken(String loginId) {
+    private String issueAccessToken(UUID user) {
 
         Map<String, Object> header = Collections.singletonMap("typ", "JWT");
 
@@ -138,20 +148,20 @@ public class UserService {
         return JWT.create()
                 .withHeader(header)
                 .withIssuer(issuer())
-                .withSubject(loginId)
+                .withSubject(user.toString())
                 .withIssuedAt(issued)
                 .withNotBefore(issued)
                 .withExpiresAt(expiration)
                 .sign(alg());
     }
 
-    private String issueRefreshToken(String loginId, String deviceName) {
+    private String issueRefreshToken(UUID user, String deviceName) {
 
         // securely generate a token and hash it
         String token = UUID.randomUUID().toString();
         String hash = BCrypt.hashpw(token, BCrypt.gensalt());
 
-        dao.updateToken(loginId, deviceName, hash);
+        dao.updateToken(user, deviceName, hash);
 
         return token;
     }
@@ -159,18 +169,20 @@ public class UserService {
     /**
      * @param token
      *            Session token
-     * @return Login ID
+     * @return User ID
      * @throws AuthenticationException
      *             If the token is invalid or expired
      */
-    public String resolveLoginId(String token) {
+    public String resolveUserId(String token) {
 
         try {
-            return JWT.require(alg())
+            String subject = JWT.require(alg())
                     .withIssuer(issuer())
                     .build()
                     .verify(token)
                     .getSubject();
+
+            return subject;
 
         } catch (JWTVerificationException e) {
             throw new AuthenticationException(e);

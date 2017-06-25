@@ -21,17 +21,17 @@ public class MessageService {
     public Message create(Message message) {
 
         message = message.toBuilder()
-                .loginId(context.getLoginId())
+                .user(context.getUserId())
                 .build();
 
         return dao.create(message);
     }
 
     public List<Message> read(MessageParams params) {
-        return dao.findBy(context.getLoginId(), params);
+        return dao.findBy(context.getUserId(), params);
     }
 
     public Message read(UUID id) {
-        return dao.find(id);
+        return dao.find(context.getUserId(), id);
     }
 }

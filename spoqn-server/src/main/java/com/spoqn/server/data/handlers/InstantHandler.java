@@ -16,22 +16,29 @@ public class InstantHandler implements TypeHandler<Instant> {
 
     @Override
     public void setParameter(PreparedStatement ps, int i, Instant parameter, JdbcType jdbcType) throws SQLException {
-        ps.setTimestamp(i, Timestamp.from(parameter));
+        ps.setTimestamp(i, toTimestamp(parameter));
     }
 
     @Override
     public Instant getResult(ResultSet rs, String columnName) throws SQLException {
-        return rs.getTimestamp(columnName).toInstant();
+        return toInstant(rs.getTimestamp(columnName));
     }
 
     @Override
     public Instant getResult(ResultSet rs, int columnIndex) throws SQLException {
-        return rs.getTimestamp(columnIndex).toInstant();
+        return toInstant(rs.getTimestamp(columnIndex));
     }
 
     @Override
     public Instant getResult(CallableStatement cs, int columnIndex) throws SQLException {
-        return cs.getTimestamp(columnIndex).toInstant();
+        return toInstant(cs.getTimestamp(columnIndex));
     }
 
+    private Timestamp toTimestamp(Instant instant) {
+        return instant == null ? null : Timestamp.from(instant);
+    }
+
+    private Instant toInstant(Timestamp timestamp) {
+        return timestamp == null ? null : timestamp.toInstant();
+    }
 }

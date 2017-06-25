@@ -2,6 +2,7 @@ package com.spoqn.server.data;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.spoqn.server.api.json.annotations.Reject;
@@ -19,6 +20,11 @@ public class Message {
     @Reject UUID id;
     String text;
     @Reject Instant created;
-    @Reject String loginId;
+    @Reject UUID user;
     @Reject List<UUID> attachments;
+    @Reject boolean direct;
+    UUID recipient;
+    String room;
+    @Reject UUID topic;
+    @Reject Set<String> tags;
 }

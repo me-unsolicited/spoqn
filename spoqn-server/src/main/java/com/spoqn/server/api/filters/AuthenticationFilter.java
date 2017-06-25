@@ -59,18 +59,18 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         if (auth == null || !auth.startsWith(AUTH_PREFIX))
             throw new NotAuthorizedException(ErrorCode.NO_AUTH_HEADER.name(), CHALLENGE_NO_AUTH);
 
-        // read the token, and use it to get the user's login ID
+        // read the token, and use it to get the user ID
         String token = auth.substring(AUTH_PREFIX.length());
-        String loginId;
+        String userId;
         try {
-            loginId = service.resolveLoginId(token);
+            userId = service.resolveUserId(token);
         } catch (AuthenticationException e) {
             throw new NotAuthorizedException(ErrorCode.BAD_TOKEN.name(), CHALLENGE_BAD_AUTH);
         }
 
-        // the security context provides the user's login ID to other components
+        // the security context provides the user ID to other components
         SecurityContext baseSc = requestContext.getSecurityContext();
-        SecurityContext sc = new UserSecurityContext(baseSc, loginId);
+        SecurityContext sc = new UserSecurityContext(baseSc, userId);
         requestContext.setSecurityContext(sc);
     }
 

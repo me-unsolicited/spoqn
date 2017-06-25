@@ -16,21 +16,29 @@ public class LocalDateHandler implements TypeHandler<LocalDate> {
 
     @Override
     public void setParameter(PreparedStatement ps, int i, LocalDate parameter, JdbcType jdbcType) throws SQLException {
-        ps.setDate(i, Date.valueOf(parameter));
+        ps.setDate(i, toDate(parameter));
     }
 
     @Override
     public LocalDate getResult(ResultSet rs, String columnName) throws SQLException {
-        return rs.getDate(columnName).toLocalDate();
+        return toLocalDate(rs.getDate(columnName));
     }
 
     @Override
     public LocalDate getResult(ResultSet rs, int columnIndex) throws SQLException {
-        return rs.getDate(columnIndex).toLocalDate();
+        return toLocalDate(rs.getDate(columnIndex));
     }
 
     @Override
     public LocalDate getResult(CallableStatement cs, int columnIndex) throws SQLException {
-        return cs.getDate(columnIndex).toLocalDate();
+        return toLocalDate(cs.getDate(columnIndex));
+    }
+
+    private Date toDate(LocalDate localDate) {
+        return localDate == null ? null : Date.valueOf(localDate);
+    }
+
+    private LocalDate toLocalDate(Date date) {
+        return date == null ? null : date.toLocalDate();
     }
 }

@@ -4,13 +4,6 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spoqn.server.data.mappers.UserMapper">
 
-   <parameterMap id="user" type="com.spoqn.server.data.User">
-    <parameter property="loginId" />
-    <parameter property="displayName" />
-    <parameter property="created" />
-    <parameter property="password" />
-  </parameterMap>
-
   <resultMap id="user" type="com.spoqn.server.data.User">
     <constructor>
       <arg column="user_uuid" javaType="java.util.UUID"/>
@@ -29,7 +22,7 @@
     FROM user
     WHERE user_uuid = #{uuid}
   </select>
-  
+
   <select id="getByLoginId" resultMap="user">
     SELECT
       user_uuid
@@ -39,50 +32,50 @@
     FROM user
     WHERE login_id = #{loginId}
   </select>
-  
-  <insert id="create" parameterMap="user">
+
+  <insert id="create">
     INSERT user SET
-      login_id = #{user.loginId}
-    , user_uuid = #{user.uuid}
-    , display_name = #{user.displayName}
+      user_uuid = #{user}
+    , login_id = #{loginId}
+    , display_name = #{displayName}
     , create_date = CURDATE()
   </insert>
 
   <select id="getPassHash" resultType="String">
     SELECT pass_hash
     FROM password
-    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    WHERE user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
   </select>
 
   <insert id="createPassword">
     INSERT password SET
-      user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+      user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
     , pass_hash = #{hash}
   </insert>
 
   <select id="getDeviceName" resultType="String">
     SELECT device_name
     FROM device
-    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    WHERE user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
       AND device_hash = #{hash}
   </select>
 
   <insert id="createDevice">
     INSERT device SET
-      user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+      user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
     , device_name = #{deviceName}
     , device_hash = #{hash}
   </insert>
 
   <delete id="deleteDevice">
     DELETE FROM device
-    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    WHERE user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
       AND device_name = #{deviceName}
   </delete>
 
   <delete id="deleteDevices">
     DELETE FROM device
-    WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+    WHERE user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
   </delete>
 
   <select id="getTokenHash" resultType="String">
@@ -91,7 +84,7 @@
     WHERE device_id = (
       SELECT device_id FROM device
       WHERE device_name = #{deviceName}
-        AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+        AND user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
     )
   </select>
 
@@ -100,7 +93,7 @@
       device_id = (
         SELECT device_id FROM device
         WHERE device_name = #{deviceName}
-          AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+          AND user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
       )
     , token_hash = #{hash}
   </insert>
@@ -110,7 +103,7 @@
     WHERE device_id = (
       SELECT device_id FROM device
       WHERE device_name = #{deviceName}
-        AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+        AND user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
     )
   </update>
 
@@ -119,7 +112,7 @@
     WHERE device_id = (
       SELECT device_id FROM device
       WHERE device_name = #{deviceName}
-        AND user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+        AND user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
     )
   </delete>
 
@@ -127,7 +120,7 @@
     DELETE FROM token
     WHERE device_id = (
       SELECT device_id FROM device
-      WHERE user_id = (SELECT user_id FROM user WHERE login_id = #{loginId})
+      WHERE user_id = (SELECT user_id FROM user WHERE user_uuid = #{user})
     )
   </delete>
 </mapper>
