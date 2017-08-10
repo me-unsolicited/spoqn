@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spoqn.server.data.mappers.RoomMapper">
+
+  <resultMap id="room" type="com.spoqn.server.data.result.RoomResult">
+    <id     property="name"     column="room_name"        javaType="String" />
+    <result property="created"  column="room_create_date" javaType="java.time.Instant" />
+    <association  property="activeTopic" resultMap="roomTopic" columnPrefix="active_" />
+    <collection property="topics" resultMap="roomTopic" />
+    <collection property="users" resultMap="roomUser" />
+  </resultMap>
+
+  <resultMap id="roomTopic" type="com.spoqn.server.data.result.RoomTopicResult">
+    <id     property="uuid"   column="topic_uuid"             javaType="java.util.UUID" />
+    <result property="url"    column="topic_url"              javaType="java.net.URL" />
+    <result property="added"  column="room_topic_create_date" javaType="java.time.Instant"/>
+  </resultMap>
+
+  <resultMap id="roomUser" type="com.spoqn.server.data.result.RoomUserResult">
+    <id     property="uuid"   column="user_uuid"              javaType="java.util.UUID" />
+    <result property="joined" column="user_room_create_date"  javaType="java.time.Instant"/>
+    <result property="active" column="is_active"              javaType="boolean" />
+  </resultMap>
+
+  <sql id="selectAll">
+    SELECT
+      r.room_name
+    , r.create_date AS room_create_date
+    , active_t.topic_uuid AS active_topic_uuid
+    , active_t.topic_url AS active_topic_url
+    , active_r_t.create_date AS active_room_topic_create_date
+    , t.topic_uuid
+    , t.topic_url
+    , r_t.create_date AS room_topic_create_date
+    , u.user_uuid
+    , u_r.create_date AS user_room_create_date
+    , u_r.is_active
+    FROM room r
+    LEFT JOIN room_topic active_r_t ON (
+      r.room_id = active_r_t.room_id
+        AND active_r_t.create_date = (
+          SELECT MAX(create_date) FROM room_topic WHERE room_topic.room_id = active_r_t.room_id
+        )
+    )
+    LEFT JOIN topic active_t ON active_r_t.topic_id = active_t.topic_id
+    LEFT JOIN room_topic r_t ON r.room_id = r_t.room_id
+    LEFT JOIN topic t ON r_t.topic_id = t.topic_id
+    LEFT JOIN user_room u_r ON r.room_id = u_r.room_id
+    LEFT JOIN user u ON u_r.user_id = u.user_id
+  </sql>
+
+  <select id="findOne" resultMap="room">
+    <include refid="selectAll" />
+    WHERE EXISTS (
+        /* the user must be in the room to see it */
+        SELECT *
+        FROM user
+        JOIN user_room ON user.user_id = user_room.user_id
+        WHERE user_room.room_id = r.room_id
+          AND user.user_uuid = #{user}
+      )
+      AND r.room_name = #{name}
+  </select>
+
+  <select id="findOneGlobally" resultMap="room">
+    <include refid="selectAll" />
+    WHERE r.room_name = #{name}
+  </select>
+
+  <select id="findBy" resultMap="room">
+    <include refid="selectAll" />
+    WHERE EXISTS (
+        /* the user must be in the room to see it */
+        SELECT *
+        FROM user
+        JOIN user_room ON user.user_id = user_room.user_id
+        WHERE user_room.room_id = r.room_id
+          AND user.user_uuid = #{user}
+      )
+    <if test="!params.users.isEmpty()">
+      AND EXISTS (
+        SELECT *
+        FROM user
+        JOIN user_room ON user.user_id = user_room.user_id
+        WHERE user_room.room_id = r.room_id
+          AND user.user_uuid IN
+      <foreach item="user" collection="params.users" open="(" close=")" separator=",">
+        #{user}
+      </foreach>
+    </if>
+    <if test="!params.topics.isEmpty()">
+      AND EXISTS (
+        SELECT *
+        FROM topic
+        JOIN room_topic ON topic.topic_id = room_topic.topic_id
+        WHERE room_topic.room_id = r.room_id
+          AND topic.topic_uuid IN
+      <foreach item="topic" collection="params.topics" open="(" close=")" separator=",">
+        #{topic}
+      </foreach>
+    </if>
+    <if test="params.since != null">
+      AND r.create_date <![CDATA[>=]]> #{params.since}
+    </if>
+    <if test="params.until != null">
+      AND r.create_date <![CDATA[<=]]> #{params.until}
+    </if>
+    ORDER BY r.create_date
+    <if test="params.top != null">
+      LIMIT #{params.top}
+    </if>
+  </select>
+
+  <select id="findTopic" resultType="java.util.UUID">
+    SELECT topic_uuid FROM topic WHERE topic_url = #{url}
+  </select>
+
+  <insert id="createRoom">
+    INSERT room SET
+      room_name = #{name}
+    , create_date = #{created}
+  </insert>
+
+  <insert id="inviteUser">
+    INSERT user_room SET
+      user_id = (SELECT user_id FROM user WHERE user_uuid = #{invitee})
+    , room_id = (SELECT room_id FROM room WHERE room_name = #{room})
+    , create_date = #{joined}
+    , is_active = #{active}
+  </insert>
+
+  <insert id="createTopic">
+    INSERT topic SET
+      topic_uuid = #{topic}
+    , topic_url = #{url}
+  </insert>
+
+  <insert id="setTopic">
+    INSERT room_topic SET
+      room_id = (SELECT room_id FROM room WHERE room_name = #{room})
+    , topic_id = (SELECT topic_id FROM topic WHERE topic_uuid = #{topic})
+    , create_date = #{added}
+  </insert>
+</mapper>

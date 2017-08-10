@@ -12,7 +12,8 @@ public enum ErrorCode {
     USERNAME_TAKEN("Username is taken"),
     PASSWORD_INADEQUATE("Password does not meet requirements"),
     USER_NOT_FOUND("User cannot be found"),
-    MALFORMED_PARAM("Parameter string cannot be parsed");
+    MALFORMED_PARAM("Parameter string cannot be parsed"),
+    ROOM_NAME_TAKEN("Room name is taken");
 
     public static final ErrorCode from(String code) {
 

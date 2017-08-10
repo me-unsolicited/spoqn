@@ -41,6 +41,7 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     @PostConstruct
     public void init() {
+
         gson = new GsonBuilder()
                 .addSerializationExclusionStrategy(new HideStrategy())
                 .addDeserializationExclusionStrategy(new RejectStrategy())
