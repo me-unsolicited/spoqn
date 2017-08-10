@@ -31,6 +31,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.spoqn.server.api.json.annotations.Hide;
 import com.spoqn.server.api.json.annotations.Reject;
+import com.spoqn.server.api.util.NullToEmptyAdapter;
 
 @Provider
 @Consumes({ MediaType.APPLICATION_JSON, "text/json" })
@@ -47,6 +48,7 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
                 .addDeserializationExclusionStrategy(new RejectStrategy())
                 .registerTypeAdapter(Instant.class, new InstantAdapter())
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .registerTypeAdapterFactory(NullToEmptyAdapter.FACTORY)
                 .create();
     }
 
