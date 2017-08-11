@@ -89,6 +89,7 @@
       <foreach item="user" collection="params.users" open="(" close=")" separator=",">
         #{user}
       </foreach>
+      )
     </if>
     <if test="!params.topics.isEmpty()">
       AND EXISTS (
@@ -100,6 +101,7 @@
       <foreach item="topic" collection="params.topics" open="(" close=")" separator=",">
         #{topic}
       </foreach>
+      )
     </if>
     <if test="params.since != null">
       AND r.create_date <![CDATA[>=]]> #{params.since}
